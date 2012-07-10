@@ -12,6 +12,7 @@ UPLOAD_FOLDER = './files/'
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # a list of partitions that we're reserving for our own use
+# not using dl
 app.config['RESERVED_PARTITIONS'] = ['list', 'dl']
 
 def partition_path(partition_name):
@@ -30,12 +31,14 @@ def file_path_for_partition(file_name, partition_name):
             file_name)
     return fp
 
-@app.route('/<path:root_partition>', methods=['GET', 'POST'])
+def is_uploaded_file(file_path):
+    fp = os.path.join(app.config['UPLOAD_FOLDER'], file_path)
+    if os.path.isfile(fp):
+        return fp
+    return None
+
+@app.route('/<path:root_partition>', methods=['POST'])
 def upload_file(root_partition):
-    requested_file = os.path.join(
-        app.config['UPLOAD_FOLDER'],
-        root_partition
-        )
     if request.method == 'POST':
         file = request.files['file']
         if file:
@@ -45,15 +48,18 @@ def upload_file(root_partition):
                return render_template("exists.html"), 409 
             file.save(fp)
             return list_contents(root_partition)
-    elif (os.path.exists(requested_file)
-            and request.method == 'GET'
-            and os.path.isfile(requested_file)):
+
+@app.route('/<path:root_partition>', methods=['GET'])
+def download_file(root_partition):
+    requested_file = is_uploaded_file(root_partition)
+    if requested_file:
         # if the user is requesting a file that exists... give it to them
         def generate_file():
             with open(requested_file, 'r') as fp:
                 yield fp.read(4096)
         return Response(generate_file(), mimetype='application/octet-stream')
-    return render_template("submit.html")
+    else:
+        return render_template("submit.html")
 
 @app.route('/list/<path:root_partition>', methods=['GET'])
 def list_contents(root_partition):

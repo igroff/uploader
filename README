@@ -1,3 +1,7 @@
 Example of using curl to post a file
 
 curl -F file=@test.txt http://p.mstuff.co/minecraft
+
+
+Deploy:
+fab deploy:name=uploader --host w.mstuff.co

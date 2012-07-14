@@ -1,5 +1,5 @@
 .PHONY: start
 
 start:
-	./server.py start > server.log 2>&1
+	./server.py start > server.log 2>&1 &
 

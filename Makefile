@@ -6,7 +6,7 @@ virtual_env:
 	@source virtual_env/bin/activate && pip install -r freezer.pip
 
 start: virtual_env
-	@source virtual_env/bin/activate && $(CURDIR)/server.py start > server.log 2>&1 &
+	@source virtual_env/bin/activate && $(CURDIR)/server.py start > server.log 2>&1 & && sleep 1
 
 debug: virtual_env
 	@source virtual_env/bin/activate && $(CURDIR)/server.py start 
@@ -17,8 +17,8 @@ stop:
 deploy:
 	fab deploy:name=uploader --host ${HOST}
 
-deploy_test:
-	fab deploy:name=uploader --host 127.0.0.1 --user vagrant --keyfile 
+deploy_vagrant:
+	fab vagrant_deploy:name=uploader
 
 test: virtual_env
 	source virtual_env/bin/activate && ./server.py test

@@ -6,7 +6,8 @@ virtual_env:
 	@source virtual_env/bin/activate && pip install -r freezer.pip
 
 start: virtual_env
-	@source virtual_env/bin/activate && $(CURDIR)/server.py start > server.log 2>&1 & && sleep 1
+	@source virtual_env/bin/activate && $(CURDIR)/server.py start > server.log 2>&1 &
+	@sleep 1
 
 debug: virtual_env
 	@source virtual_env/bin/activate && $(CURDIR)/server.py start 

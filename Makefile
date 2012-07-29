@@ -6,7 +6,10 @@ virtual_env:
 	source virtual_env/bin/activate && pip install -r freezer.pip
 
 start: virtual_env
-	@$(CURDIR)/server.py start > server.log 2>&1 &
+	source virtual_env/bin/activate && $(CURDIR)/server.py start > server.log 2>&1 &
+
+debug: virtual_env
+	source virtual_env/bin/activate && $(CURDIR)/server.py start 
 
 stop:
 	@for pid in `ps -ef | grep '$(CURDIR)/server.py' | grep -v grep | awk '{ print($$2) }'`; do kill $$pid; done

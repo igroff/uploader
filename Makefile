@@ -2,14 +2,14 @@ SHELL=/usr/bin/env bash
 .PHONY: start stop deploy clean test
 
 virtual_env:
-	virtualenv --no-site-packages --python=python2.7 virtual_env
-	source virtual_env/bin/activate && pip install -r freezer.pip
+	@virtualenv --no-site-packages --python=python2.7 virtual_env
+	@source virtual_env/bin/activate && pip install -r freezer.pip
 
 start: virtual_env
-	source virtual_env/bin/activate && $(CURDIR)/server.py start > server.log 2>&1 &
+	@source virtual_env/bin/activate && $(CURDIR)/server.py start > server.log 2>&1 &
 
 debug: virtual_env
-	source virtual_env/bin/activate && $(CURDIR)/server.py start 
+	@source virtual_env/bin/activate && $(CURDIR)/server.py start 
 
 stop:
 	@for pid in `ps -ef | grep '$(CURDIR)/server.py' | grep -v grep | awk '{ print($$2) }'`; do kill $$pid; done

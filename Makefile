@@ -25,3 +25,4 @@ test: virtual_env
 
 clean:
 	@rm -rf virtual_env
+	@rm -rf log/*

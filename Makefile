@@ -6,7 +6,7 @@ virtual_env:
 	@source virtual_env/bin/activate && pip install -r freezer.pip
 
 start: virtual_env
-	@source virtual_env/bin/activate && $(CURDIR)/server.py start > server.log 2>&1 &
+	@supervisord --configuration supervisord.conf
 
 debug: virtual_env
 	@source virtual_env/bin/activate && $(CURDIR)/server.py start 

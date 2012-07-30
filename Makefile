@@ -15,7 +15,7 @@ debug: virtual_env
 	@source virtual_env/bin/activate && ./server.py start
 
 stop:
-	@for pid in `ps -ef | grep '$(CURDIR)/server.py' | grep -v grep | awk '{ print($$2) }'`; do kill $$pid; done
+	@source virtual_env/bin/activate && supervisorctl stop all && supervisorctl shutdown
 
 deploy:
 	fab deploy:name=uploader --host ${HOST}

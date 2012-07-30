@@ -1,5 +1,5 @@
 SHELL=/usr/bin/env bash
-.PHONY: start stop deploy clean test
+.PHONY: start stop status deploy deploy_vagrant clean test debug 
 
 log:
 	mkdir log
@@ -14,8 +14,11 @@ start: virtual_env log
 debug: virtual_env
 	@source virtual_env/bin/activate && ./server.py start
 
-stop:
+stop: virtual_env
 	@source virtual_env/bin/activate && supervisorctl stop all && supervisorctl shutdown
+
+status: virtual_env
+	@source virtual_env/bin/activate && supervisorctl status
 
 deploy:
 	fab deploy:name=uploader --host ${HOST}

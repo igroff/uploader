@@ -3,3 +3,4 @@ virtual_env/
 log/
 supervisord.pid
 supervisord.sock
+*.pyc

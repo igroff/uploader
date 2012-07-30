@@ -9,7 +9,7 @@ start: virtual_env
 	@supervisord --configuration supervisord.conf
 
 debug: virtual_env
-	@source virtual_env/bin/activate && $(CURDIR)/server.py start 
+	@source virtual_env/bin/activate && gunicorn --access-logfile log/access.log -w 1 -b 127.0.0.1:5000 server:app
 
 stop:
 	@for pid in `ps -ef | grep '$(CURDIR)/server.py' | grep -v grep | awk '{ print($$2) }'`; do kill $$pid; done

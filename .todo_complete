@@ -1,0 +1,2 @@
+x 07/29/12 22:05:32  make a simple deploy script to tar up the contents of the app and push it out to a remote location
+x 07/29/12 22:05:46  configure the proxy temp path stuff in nginx to allow downloads via uploader (or map to an nginx path)

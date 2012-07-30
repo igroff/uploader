@@ -69,7 +69,7 @@ def list_contents(root_partition):
 
 if __name__ == "__main__":
     arg_parser = ArgumentParser(description="personal log server")
-    arg_parser.add_argument("action", choices=('start', 'test', 'debug'),
+    arg_parser.add_argument("action", choices=('start', 'test'),
         help="action to be performed")
     args = arg_parser.parse_args()
 
@@ -77,8 +77,6 @@ if __name__ == "__main__":
         os.makedirs(UPLOAD_FOLDER)
 
     if args.action == "start":
-        app.run()
-    if args.action == "debug":
         app.run(debug=True)
     elif args.action == "test":
         import sys

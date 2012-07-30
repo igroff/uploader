@@ -1,11 +1,14 @@
 SHELL=/usr/bin/env bash
 .PHONY: start stop deploy clean test
 
+log:
+	mkdir log
+
 virtual_env:
 	@virtualenv --no-site-packages --python=python2.7 virtual_env
 	@source virtual_env/bin/activate && pip install -r freezer.pip
 
-start: virtual_env
+start: virtual_env log
 	@source virtual_env/bin/activate && supervisord --configuration supervisord.conf
 
 debug: virtual_env

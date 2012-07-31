@@ -4,3 +4,4 @@ log/
 supervisord.pid
 supervisord.sock
 *.pyc
+.vagrant

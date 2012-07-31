@@ -1,2 +1,2 @@
 # lame hack to assure that things keep running
-*/5 * * * * cd ~ ; make start
+*/5 * * * * cd ~ ; make start ; exit 0

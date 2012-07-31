@@ -1,2 +1,4 @@
 # lame hack to assure that things keep running
-*/5 * * * * cd ~ ; make start ; exit 0
+# really, I'm not sure we need this so I'm gonna put it here
+# on a real slow interval and see how it goes
+* 23 * * * cd ~ ; make start ; exit 0

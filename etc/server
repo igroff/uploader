@@ -1,8 +1,7 @@
 #! /usr/bin/env bash
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+MY_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export FLASK_DEBUG=False
 export FLASK_RELOAD=False
-source $DIR/set-version.sh
-source pyenv/bin/activate
+source $MY_DIR/set-version.sh
+source pyenv/bin/activate && python src/server.py
 
-src/server.py

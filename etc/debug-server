@@ -4,4 +4,5 @@ export FLASK_DEBUG=True
 export FLASK_RELOAD=True
 source $DIR/set-version.sh
 source pyenv/bin/activate
-src/server.py
+
+python src/server.py

@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-
 import os
 import uuid
 import json
@@ -7,7 +6,6 @@ import time
 import shutil
 import logging
 from os import path
-from argparse import ArgumentParser
 
 from flask import Flask, request, redirect, url_for
 from flask import render_template, jsonify
@@ -23,6 +21,14 @@ USE_RELOADER = DEBUG or os.environ.get('FLASK_RELOAD', False)
 @app.route("/diagnostic", methods=["GET"])
 def diagnostic_view():
     return jsonify(message="ok", version=VERSION)
-    
 
-app.run(debug=DEBUG, port=PORT)
+print("USE_RELOADER=%s" % USE_RELOADER)
+print("DEBUG=%s" % DEBUG)
+
+if (__name__ == "__main__"):
+    app.run(
+        debug=DEBUG,
+        use_debugger=DEBUG,
+        port=PORT,
+        use_reloader=USE_RELOADER
+    )

@@ -2,6 +2,7 @@
 
 pyenv:
 	virtualenv -p python2.7 pyenv
+	source pyenv/bin/activate && pip install -r frozen
 
 dirs:
 	mkdir -p var/logs
@@ -13,8 +14,7 @@ start: setup
 	echo "starting application"
 
 test: setup
-	echo "running tests"
-	
+	source pyenv/bin/activate && nosetests	
 	
 
 clean:

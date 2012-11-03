@@ -6,6 +6,5 @@ if [ ! -n "$PORT" ]; then
 fi
 source $MY_DIR/set-version.sh
 source .pyenv/bin/activate
-pushd src
-gunicorn --bind 0.0.0.0:$PORT server:app
+gunicorn --bind 0.0.0.0:$PORT core:app
 

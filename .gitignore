@@ -2,3 +2,4 @@ pyenv
 var/
 *.swp
 *.pyc
+.pyenv

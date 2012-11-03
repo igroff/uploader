@@ -2,11 +2,11 @@
 
 debug: setup
 	@echo "starting in debug mode"
-	@etc/debug-server
+	@pyserver/bin/debug-server
 
 .pyenv:
 	virtualenv -p python2.7 .pyenv
-	source .pyenv/bin/activate && pip install -r frozen
+	source .pyenv/bin/activate && pip install -r pyserver/etc/frozen
 
 var/logs: 
 	mkdir -p var/logs
@@ -16,13 +16,13 @@ setup: var/logs .pyenv
 	
 start: setup 
 	@echo "starting application"
-	@etc/server start
+	@pyserver/bin/server start
 
 test: setup
 	source .pyenv/bin/activate && nosetests	
 
 clean:
-	- @rm -rf pyenv
+	- @rm -rf .pyenv
 	- @rm -rf var
 
 

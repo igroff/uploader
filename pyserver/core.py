@@ -20,6 +20,7 @@ VERSION = os.environ.get('CURRENT_SHA', None)
 def diagnostic_view():
     return jsonify(message="ok", version=VERSION)
 
+
 if (__name__ == "__main__"):
     """ we should only get here for debugging, as we're gonna use gunicorn
         for serving in production

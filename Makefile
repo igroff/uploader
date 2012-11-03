@@ -1,4 +1,4 @@
-.PHONY: clean start test debug setup
+.PHONY: clean start test debug setup freeze
 
 debug: setup
 	@echo "starting in debug mode"
@@ -20,6 +20,9 @@ start: setup
 
 test: setup
 	source .pyenv/bin/activate && nosetests	
+
+freeze: setup
+	source .pyenv/bin/activate && pip freeze
 
 clean:
 	- @rm -rf .pyenv

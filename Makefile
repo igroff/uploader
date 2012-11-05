@@ -1,8 +1,7 @@
 .PHONY: clean start test debug setup freeze
 
 debug: setup
-	@echo "starting in debug mode"
-	@pyserver/bin/debug-server
+	@pyserver/bin/server debug
 
 .pyenv:
 	virtualenv -p python2.7 .pyenv
@@ -15,11 +14,9 @@ setup: var/logs .pyenv
 	echo "setup"
 	
 start: setup 
-	@echo "starting application"
 	@pyserver/bin/server start
 
 test: setup
-	@echo "running tests...."
 	@pyserver/bin/server test
 
 freeze: setup

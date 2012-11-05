@@ -15,7 +15,6 @@ from argparse import ArgumentParser
 
 
 app = Flask(__name__)
-PORT = os.environ.get('FLASK_PORT', 5000)
 VERSION = os.environ.get('CURRENT_SHA', None)
 
 @app.route("/diagnostic", methods=["GET"])
@@ -34,7 +33,7 @@ if (__name__ == "__main__"):
     arg_parser.add_argument("action", choices=('start', 'test'))
     args = arg_parser.parse_args()
     if args.action == "start":
-        app.run(use_reloader=True, debug=True, use_debugger=True, port=PORT)
+        app.run(use_reloader=True, debug=True, use_debugger=True, port=args.port)
     else:
         import unittest
         import sys

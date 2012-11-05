@@ -14,7 +14,7 @@ case $1 in
         $DIR/stop-server
     ;;
     debug)
-		pyserver/core.py start
+		pyserver/core.py start --port $PORT
     ;;
     test)
 		pyserver/core.py test

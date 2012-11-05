@@ -19,7 +19,8 @@ start: setup
 	@pyserver/bin/server start
 
 test: setup
-	source .pyenv/bin/activate && nosetests	
+	@echo "running tests...."
+	@pyserver/bin/server test
 
 freeze: setup
 	source .pyenv/bin/activate && pip freeze

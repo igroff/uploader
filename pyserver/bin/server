@@ -1,15 +1,24 @@
 #! /usr/bin/env bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source $DIR/set-version.sh
+source .pyenv/bin/activate
+if [ ! -n "$PORT" ]; then
+    PORT=5000
+fi
+
 case $1 in
     start)
-        $DIR/start-server
+		gunicorn --bind 0.0.0.0:$PORT pyserver.core:app
     ;;
     stop)
         $DIR/stop-server
     ;;
     debug)
-        $DIR/debug-server
+		pyserver/core.py start
+    ;;
+    test)
+		pyserver/core.py test
     ;;
     *)
-        echo "usage: server [start|stop|debug]";;
+        echo "usage: server [debug|start|stop|test]";;
 esac

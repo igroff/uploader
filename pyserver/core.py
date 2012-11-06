@@ -18,16 +18,17 @@ app = Flask(__name__)
 VERSION = os.environ.get('CURRENT_SHA', None)
 
 def json_response(*args, **kwargs):
-    """ creates a response assuming that the provided thing is either a 
-        dictionary object or a JSON string.  Handles the setting of content type
-        and propery callback wrapping for JSONP handling
+    """ Creates a JSON response for the given params, handling the creation a callback wrapper
+        if a callback is provided, and allowing for either a string arg (expected to be JSON)
+        or kwargs to be passed formatted correctly for the response.
+        Also sets the Content-Type of the response to application/json
     """
-    callback = request.values.get('callback', None)
     if args:
         response_string = args[0]
     else:
         response_string = json.dumps(kwargs)
 
+    callback = request.values.get('callback', None)
     if callback:
         response_string = "%s(%s);" % (callback, response_string)
         

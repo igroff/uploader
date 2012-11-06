@@ -45,6 +45,13 @@ def json_response(*args, **kwargs):
 def diagnostic_view():
     return json_response(status_code=200, message="ok", version=VERSION)
 
+@app.route("/diagnostic/echo", methods=["GET"])
+def diagnostic_echo_view():
+    d = request.values.to_dict()
+    if 'callback' in d:
+        del(d['callback'])
+    return json_response(**d)
+
 execfile('./handlers.py')
 
 

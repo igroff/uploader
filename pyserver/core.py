@@ -17,9 +17,26 @@ from argparse import ArgumentParser
 app = Flask(__name__)
 VERSION = os.environ.get('CURRENT_SHA', None)
 
+def json_response(*args, **kwargs):
+    """ creates a response assuming that the provided thing is either a 
+        dictionary object or a JSON string.  Handles the setting of content type
+        and propery callback wrapping for JSONP handling
+    """
+    callback = request.values.get('callback', None)
+    if args:
+        response_string = args[0]
+    else:
+        response_string = json.dumps(kwargs)
+
+    if callback:
+        response_string = "%s(%s);" % (callback, response_string)
+        
+    return response_string, 200, {"Content-Type": "application/json"}
+    
+
 @app.route("/diagnostic", methods=["GET"])
 def diagnostic_view():
-    return jsonify(message="ok", version=VERSION)
+    return json_response(message="ok", version=VERSION)
 
 execfile('./handlers.py')
 

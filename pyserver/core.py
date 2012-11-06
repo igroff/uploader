@@ -23,6 +23,12 @@ def json_response(*args, **kwargs):
         or kwargs to be passed formatted correctly for the response.
         Also sets the Content-Type of the response to application/json
     """
+    # if provided, use the status code otherwise default to 200
+    status_code = kwargs.get('status_code', 200)
+    # remove it so it doesn't end up in our response
+    if 'status_code' in kwargs:
+        del(kwargs['status_code'])
+
     if args:
         response_string = args[0]
     else:
@@ -32,12 +38,12 @@ def json_response(*args, **kwargs):
     if callback:
         response_string = "%s(%s);" % (callback, response_string)
         
-    return response_string, 200, {"Content-Type": "application/json"}
+    return response_string, status_code, {"Content-Type": "application/json"}
     
 
 @app.route("/diagnostic", methods=["GET"])
 def diagnostic_view():
-    return json_response(message="ok", version=VERSION)
+    return json_response(status_code=200, message="ok", version=VERSION)
 
 execfile('./handlers.py')
 

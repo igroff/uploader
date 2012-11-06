@@ -9,7 +9,6 @@ debug: setup
 	mkdir tmp
 	cd tmp/ && curl -O http://public.intimidatingbits.com/birkenfeld-sphinx-contrib-f60d4a35adab.zip
 	cd tmp/ && unzip birkenfeld-sphinx-contrib-f60d4a35adab.zip
-	
 
 var/logs: 
 	mkdir -p var/logs
@@ -17,7 +16,6 @@ var/logs:
 .doc_build:
 	mkdir -p .doc_build/text
 	mkdir -p .doc_build/doctrees
-
 
 setup: var/logs .pyenv
 	echo "setup"

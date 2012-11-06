@@ -6,9 +6,12 @@ debug: setup
 .pyenv:
 	virtualenv -p python2.7 .pyenv
 	source .pyenv/bin/activate && pip install -r pyserver/etc/frozen
-	mkdir tmp
-	cd tmp/ && curl -O http://public.intimidatingbits.com/birkenfeld-sphinx-contrib-f60d4a35adab.zip
-	cd tmp/ && unzip birkenfeld-sphinx-contrib-f60d4a35adab.zip
+	-mkdir tmp
+	source .pyenv/bin/activate && cd tmp/ && curl -O http://public.intimidatingbits.com/birkenfeld-sphinx-contrib-f60d4a35adab.zip
+	source .pyenv/bin/activate && cd tmp/ && unzip birkenfeld-sphinx-contrib-f60d4a35adab.zip
+	source .pyenv/bin/activate && cd tmp/birkenfeld-sphinx-contrib-f60d4a35adab/httpdomain && python setup.py build
+	source .pyenv/bin/activate && cd tmp/birkenfeld-sphinx-contrib-f60d4a35adab/httpdomain && python setup.py install
+	-rm -rf tmp/
 
 var/logs: 
 	mkdir -p var/logs

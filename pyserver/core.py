@@ -44,6 +44,8 @@ def json_response(*args, **kwargs):
     if args:
         response_string = args[0]
     else:
+        if 'callback' in kwargs:
+            del(kwargs['callback'])
         response_string = json.dumps(kwargs)
 
     callback = request.values.get('callback', None)
@@ -87,10 +89,7 @@ def diagnostic_echo_view():
         :param '*': any inbound request parameters will be echoed back
         :statuscode 200: always returns OK
     """
-    d = request.values.to_dict()
-    if 'callback' in d:
-        del(d['callback'])
-    return d
+    return request.values.to_dict()
 
 @app.route("/diagnostic/fail", methods=["GET"])
 def fail():

@@ -9,6 +9,10 @@ class TestFixture(unittest.TestCase):
         response = self.app.get("/diagnostic")
         self.assertTrue('X-HOSTNAME' in response.headers)
         self.assertTrue(response.headers['X-HOSTNAME']) 
+        
+    def test_head_root_health_check(self):
+        response = self.app.get("/")
+        self.assertTrue(200, response.status_code)
 
     def test_diagnostic(self):
         response = self.app.get("/diagnostic")

@@ -69,6 +69,7 @@ app.process_response = global_response_handler
 ################################################################################
 # views 
 
+@app.route("/", methods=["GET"])
 @app.route("/diagnostic", methods=["GET"])
 @make_my_response_json
 def diagnostic_view():

@@ -1,4 +1,4 @@
-.PHONY: clean start test debug setup freeze docs
+.PHONY: clean start test debug setup freeze docs show_config
 
 debug: setup
 	@pyserver/bin/server debug
@@ -28,6 +28,9 @@ start: setup
 
 test: setup
 	@pyserver/bin/server test
+
+show_config:
+	@pyserver/bin/server config
 
 freeze: setup
 	source .pyenv/bin/activate && pip freeze

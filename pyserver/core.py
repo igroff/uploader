@@ -11,8 +11,10 @@ from flask import render_template, jsonify
 from argparse import ArgumentParser
 from functools import wraps
 
+STATIC_DIR = os.environ.get('STATIC_DIR', path.join(os.getcwd(), 'static'))
+TEMPLATE_DIR = os.environ.get('TEMPLATE_DIR', path.join(os.getcwd(), 'templates'))
+app = Flask(__name__, static_folder=STATIC_DIR, template_folder=TEMPLATE_DIR)
 
-app = Flask(__name__)
 app.config['VERSION'] = os.environ.get('CURRENT_SHA', None)
 app.config['X-HOSTNAME'] = os.environ.get('XHOSTNAME', '')
 app.config['LOG_LEVEL'] = os.environ.get('LOG_LEVEL', 'WARNING')
@@ -124,11 +126,14 @@ if (__name__ == "__main__"):
     """
     arg_parser = ArgumentParser(description="")
     arg_parser.add_argument("-p", "--port", default=5000, type=int)
-    arg_parser.add_argument("action", choices=('start', 'test'))
+    arg_parser.add_argument("action", choices=('start', 'test', 'config'))
     args = arg_parser.parse_args()
     if args.action == "start":
         logging.getLogger().setLevel('DEBUG')
         app.run(use_reloader=True, debug=True, use_debugger=True, port=args.port)
+    elif args.action == "config":
+        for key, value in app.config.items():
+            print("%s: %s" % (key, value))
     else:
         import unittest
         import sys

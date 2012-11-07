@@ -1,9 +1,11 @@
 import unittest
 
+
 class TestFixture(unittest.TestCase):
     def setUp(self):
         app.config['TESTING'] = True
         self.app = app.test_client()
+        self.app.debug = True
 
     def test_response_header_has_hostname(self):
         response = self.app.get("/diagnostic")
@@ -47,3 +49,9 @@ class TestFixture(unittest.TestCase):
         jr = json.loads(response.data)
         self.assertEqual({}, jr)
 
+    def test_static_works_at_all(self):
+        with open("./static/index.html", "w+") as sf:
+            sf.write("I'm static!")
+        response = self.app.get("/static/index.html")
+        self.assertEqual(200, response.status_code)
+        self.assertEqual("I'm static!", response.data.strip())

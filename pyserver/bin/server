@@ -20,6 +20,9 @@ case $1 in
     test)
 		pyserver/core.py test
     ;;
+    config)
+        pyserver/core.py config
+    ;;
     *)
-        echo "usage: server [debug|start|stop|test]";;
+        echo "usage: server [debug|start|stop|test|config]";;
 esac

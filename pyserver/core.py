@@ -1,16 +1,12 @@
 #! /usr/bin/env python
 
 import os
-import uuid
 import json
-import time
-import shutil
 import logging
 from os import path
 
-from flask import Flask, request, redirect, url_for
+from flask import Flask, request
 from flask import render_template, jsonify
-from flask import Response
 from argparse import ArgumentParser
 from functools import wraps
 
@@ -55,6 +51,9 @@ def global_response_handler(response):
 
 app.process_response = global_response_handler    
 
+################################################################################
+# views 
+
 @app.route("/diagnostic", methods=["GET"])
 @make_my_response_json
 def diagnostic_view():
@@ -92,10 +91,12 @@ def fail():
     """
     raise Exception("Test exception so you know how the app behaves")
 
+# end views 
+################################################################################
+
 @app.errorhandler(500)
 def general_error_handler(error):
     logging.error("unhandled exception: %s" % error)
-
 
 # find and load our handler files, this isn't fancy and it's not intended to be
 for name in os.listdir("."):
@@ -105,8 +106,8 @@ for name in os.listdir("."):
 
 
 if (__name__ == "__main__"):
-    """ we should only get here for debugging, as we're gonna use gunicorn
-        for serving in production
+    """ we should only get here for debugging and testing, as we're gonna
+        use gunicorn for serving in production
     """
     arg_parser = ArgumentParser(description="")
     arg_parser.add_argument("-p", "--port", default=5000, type=int)

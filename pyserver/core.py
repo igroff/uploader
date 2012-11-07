@@ -66,8 +66,10 @@ def diagnostic_echo_view():
     if 'callback' in d:
         del(d['callback'])
     return d
-
-execfile('./handlers.py')
+for name in os.listdir("."):
+    split_name = os.path.splitext(name)
+    if "handler" in split_name[0] and split_name[1] == ".py":
+        execfile(name)
 
 
 if (__name__ == "__main__"):

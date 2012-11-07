@@ -7,6 +7,7 @@
     and production modes, standard routes such as diagnostic
     and version routes will be added.
 """
-@app.route("/help", methods=["GET"])
-def helper():
-    return "you've been helped"
+@app.route("/replace_me", methods=["GET"])
+def im_here_for_testing():
+    return "this is a test response"
+

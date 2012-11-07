@@ -66,6 +66,8 @@ def diagnostic_echo_view():
     if 'callback' in d:
         del(d['callback'])
     return d
+
+# find and load our handler files, this isn't fancy and it's not intended to be
 for name in os.listdir("."):
     split_name = os.path.splitext(name)
     if "handler" in split_name[0] and split_name[1] == ".py":
@@ -85,7 +87,10 @@ if (__name__ == "__main__"):
     else:
         import unittest
         import sys
-        execfile("./tests.py")
+        for name in os.listdir("."):
+            split_name = os.path.splitext(name)
+            if "tests" in split_name[0] and split_name[1] == ".py":
+                execfile(name)
         # unittest uses command line params, so remove ours
         sys.argv.pop()
         unittest.main() 

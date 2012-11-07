@@ -30,5 +30,5 @@ class TestFixture(unittest.TestCase):
         self.assertTrue("version" in response.data, response.data)
 
     def test_can_find_view_from_handler_file(self):
-        response = self.app.get("/replace_me")
+        response = self.app.get("/test_me")
         self.assertEqual("this is a test response", response.data)

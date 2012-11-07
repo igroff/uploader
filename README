@@ -1,0 +1,42 @@
+
+Welcome to token-service's documentation!
+*****************************************
+
+server exists at token.glgroup.com:9090
+
+
+Endpoints
+*********
+
+GET /diagnostic/echo
+
+   Helper endpoint for developing diagnostic checks.  Simply echoes
+   back  any values provided in the inbound request.
+
+   Parameters:
+      * **'*'** -- any inbound request parameters will be echoed back
+
+   Status Codes:
+      * **200** -- always returns OK
+
+GET /diagnostic/fail
+
+   This endpoint is designed to show how the application fails.  Can
+   be used to assist in creating monitors to check the application
+   health and respond to failures.
+
+   Status Codes:
+      * **500** -- always returns failure
+
+GET /diagnostic
+
+   Used to return the status of the application, including the version
+   of the running application.
+
+   Status Codes:
+      * **200** -- returned as long as all checks return healthy
+
+      * **500** -- returned in the case of any diagnostic tests
+        failing
+
+GET /test_me

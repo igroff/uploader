@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import os
+import sys
 import json
 import logging
 from os import path
@@ -10,11 +11,17 @@ from flask import render_template, jsonify
 from argparse import ArgumentParser
 from functools import wraps
 
-logging.basicConfig(format='%(asctime)s [%(levelname)s]: %(message)s')
 
 app = Flask(__name__)
 app.config['VERSION'] = os.environ.get('CURRENT_SHA', None)
 app.config['X-HOSTNAME'] = os.environ.get('XHOSTNAME', '')
+app.config['LOG_LEVEL'] = os.environ.get('LOG_LEVEL', 'WARNING')
+
+logging.basicConfig(
+    format='%(asctime)s [%(levelname)s]: %(message)s',
+    stream=sys.stderr,
+    level=app.config['LOG_LEVEL']
+)
 
 def make_my_response_json(f):
     @wraps(f)
@@ -43,7 +50,11 @@ def json_response(*args, **kwargs):
     if callback:
         response_string = "%s(%s);" % (callback, response_string)
         
-    return response_string, status_code, {"Content-Type": "application/json"}
+    return (
+        response_string,
+        status_code,
+        {"Content-Type": "application/json", "Cache-Control": "Private"}
+    )
 
 def global_response_handler(response):
     response.headers['X-HOSTNAME'] = app.config['X-HOSTNAME']
@@ -114,6 +125,7 @@ if (__name__ == "__main__"):
     arg_parser.add_argument("action", choices=('start', 'test'))
     args = arg_parser.parse_args()
     if args.action == "start":
+        logging.getLogger().setLevel('DEBUG')
         app.run(use_reloader=True, debug=True, use_debugger=True, port=args.port)
     else:
         import unittest

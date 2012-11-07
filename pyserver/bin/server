@@ -9,7 +9,7 @@ fi
 
 case $1 in
     start)
-		gunicorn --bind 0.0.0.0:$PORT pyserver.core:app
+		exec gunicorn --bind 0.0.0.0:$PORT pyserver.core:app
     ;;
     stop)
         $DIR/stop-server

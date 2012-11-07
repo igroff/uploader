@@ -24,7 +24,7 @@ setup: var/logs .pyenv
 	echo "setup"
 	
 start: setup 
-	@pyserver/bin/server start
+	@exec pyserver/bin/server start
 
 test: setup
 	@pyserver/bin/server test

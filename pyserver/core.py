@@ -26,7 +26,7 @@ logging.basicConfig(
 def make_my_response_json(f):
     @wraps(f)
     def view_wrapper(*args, **kwargs):
-        return json_response(**f(*args, **kwargs))
+        return json_response(**(f(*args, **kwargs) or {}))
     return view_wrapper
 
 def json_response(*args, **kwargs):

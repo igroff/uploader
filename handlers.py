@@ -19,10 +19,14 @@
     to their route data.
 
     e.g.
-    GET /diagnostic/echo
+    GET /test_me
 
-       Helper endpoint for developing diagnostic checks.  Simply echoes
-       back  any values provided in the inbound request.
+       this is my documentation for this endpoint
+
+       Status Codes:
+          * **200** -- returned if everything is ok
+
+          * **500** -- returned if nothing is ok
 
 decorators:
     make_my_response_json - this decorator allows the view to simply
@@ -32,5 +36,11 @@ decorators:
 """
 @app.route("/test_me", methods=["GET"])
 def im_here_for_testing():
+    """ this is my documentation for this endpoint
+
+        :statuscode 200: returned if everything is ok
+        :statuscode 500: returned if nothing is ok
+    """
+
     return "this is a test response"
 

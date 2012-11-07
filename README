@@ -38,3 +38,10 @@ GET /diagnostic
         failing
 
 GET /test_me
+
+   this is my documentation for this endpoint
+
+   Status Codes:
+      * **200** -- returned if everything is ok
+
+      * **500** -- returned if nothing is ok

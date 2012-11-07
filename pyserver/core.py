@@ -20,7 +20,7 @@ app.config['VERSION'] = os.environ.get('CURRENT_SHA', None)
 app.config['X-HOSTNAME'] = os.environ.get('XHOSTNAME', '')
 
 def make_my_response_json(f):
-    wraps(f)
+    @wraps(f)
     def view_wrapper(*args, **kwargs):
         return json_response(**f(*args, **kwargs))
     return view_wrapper
@@ -60,11 +60,12 @@ def diagnostic_view():
     return dict(message="ok", version=app.config['VERSION'])
 
 @app.route("/diagnostic/echo", methods=["GET"])
+@make_my_response_json
 def diagnostic_echo_view():
     d = request.values.to_dict()
     if 'callback' in d:
         del(d['callback'])
-    return json_response(**d)
+    return d
 
 execfile('./handlers.py')
 

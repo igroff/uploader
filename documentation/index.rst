@@ -13,6 +13,7 @@ Endpoints
 
 .. autoflask:: pyserver.core:app
     :include-empty-docstring:
+    :undoc-endpoints: im_here_for_testing
     :undoc-static:
 
 

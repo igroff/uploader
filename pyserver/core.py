@@ -72,8 +72,8 @@ def diagnostic_view():
         Used to return the status of the application, including the version
         of the running application.
     
-        :status 200: returned as long as all checks return healthy
-        :status 500: returned in the case of any diagnostic tests failing
+        :statuscode 200: returned as long as all checks return healthy
+        :statuscode 500: returned in the case of any diagnostic tests failing
     """
     return dict(message="ok", version=app.config['VERSION'])
 
@@ -84,7 +84,8 @@ def diagnostic_echo_view():
         Helper endpoint for developing diagnostic checks.  Simply echoes back 
         any values provided in the inbound request.
     
-        :status 200: always returns OK
+        :param '*': any inbound request parameters will be echoed back
+        :statuscode 200: always returns OK
     """
     d = request.values.to_dict()
     if 'callback' in d:
@@ -93,12 +94,11 @@ def diagnostic_echo_view():
 
 @app.route("/diagnostic/fail", methods=["GET"])
 def fail():
-    """
-        This endpoint is designed to show how the application fails.  Can be used
+    """ This endpoint is designed to show how the application fails.  Can be used
         to assist in creating monitors to check the application health and respond
         to failures.
 
-        :status 500: always returns failure
+        :statuscode 500: always returns failure
     """
     raise Exception("Test exception so you know how the app behaves")
 

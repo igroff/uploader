@@ -41,7 +41,7 @@ def json_response(*args, **kwargs):
     if 'status_code' in kwargs:
         del(kwargs['status_code'])
 
-    callback = request.values.get('callback', None) or kwargs.get('callback', None)
+    callback = kwargs.get('callback', None) or request.values.get('callback', None)
     
     if 'callback' in kwargs:
         del(kwargs['callback'])

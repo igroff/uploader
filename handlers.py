@@ -28,6 +28,14 @@
 
           * **500** -- returned if nothing is ok
 
+    JSONP request handling:
+    When handling a JSONP request (a request that has a 'callback' param)
+    the callback from the request will be used.  The view function itself can
+    provide a callback key in its return value in which case it will be used
+    to force the response format into a callback, the callback value provided
+    in the return from the view function will override that which was included
+    in the request (god knows why you'd do that)
+
 decorators:
     make_my_response_json - this decorator allows the view to simply
     return a dictionary object, and handles creating a response that is

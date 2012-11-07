@@ -8,9 +8,21 @@
     and production modes, standard routes such as diagnostic
     and version routes will be added.
     
-    The framework als provides helpers around responding with JSON/JSONP
+    The framework also provides helpers around responding with JSON/JSONP
     as well as setting headers to provide assistance in identifying source
     servers.
+
+    The framework also provides (via make) the automatic creation of
+    documentation using sphinx and its autoflask extesion.  This leverages
+    the view function docstrings when creating documentation so that the generated
+    documentation will include the rollup of all the view docstrings mapped
+    to their route data.
+
+    e.g.
+    GET /diagnostic/echo
+
+       Helper endpoint for developing diagnostic checks.  Simply echoes
+       back  any values provided in the inbound request.
 
 decorators:
     make_my_response_json - this decorator allows the view to simply

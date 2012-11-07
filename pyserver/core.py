@@ -12,10 +12,18 @@ from flask import Flask, request, redirect, url_for
 from flask import render_template, jsonify
 from flask import Response
 from argparse import ArgumentParser
+from functools import wraps
 
 
 app = Flask(__name__)
-VERSION = os.environ.get('CURRENT_SHA', None)
+app.config['VERSION'] = os.environ.get('CURRENT_SHA', None)
+app.config['X-HOSTNAME'] = os.environ.get('XHOSTNAME', '')
+
+def make_my_response_json(f):
+    wraps(f)
+    def view_wrapper(*args, **kwargs):
+        return json_response(**f(*args, **kwargs))
+    return view_wrapper
 
 def json_response(*args, **kwargs):
     """ Creates a JSON response for the given params, handling the creation a callback wrapper
@@ -39,11 +47,17 @@ def json_response(*args, **kwargs):
         response_string = "%s(%s);" % (callback, response_string)
         
     return response_string, status_code, {"Content-Type": "application/json"}
-    
+
+def global_response_handler(response):
+    response.headers['X-HOSTNAME'] = app.config['X-HOSTNAME']
+    return response
+
+app.process_response = global_response_handler    
 
 @app.route("/diagnostic", methods=["GET"])
+@make_my_response_json
 def diagnostic_view():
-    return json_response(status_code=200, message="ok", version=VERSION)
+    return dict(message="ok", version=app.config['VERSION'])
 
 @app.route("/diagnostic/echo", methods=["GET"])
 def diagnostic_echo_view():

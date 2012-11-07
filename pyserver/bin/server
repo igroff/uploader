@@ -1,5 +1,6 @@
 #! /usr/bin/env bash
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+export XHOSTNAME=`hostname`
 source $DIR/set-version.sh
 source .pyenv/bin/activate
 if [ ! -n "$PORT" ]; then

@@ -5,12 +5,16 @@ class TestFixture(unittest.TestCase):
         app.config['TESTING'] = True
         self.app = app.test_client()
 
+    def test_response_header_has_hostname(self):
+        response = self.app.get("/diagnostic")
+        self.assertTrue('X-HOSTNAME' in response.headers)
+        self.assertTrue(response.headers['X-HOSTNAME']) 
+
     def test_diagnostic(self):
         response = self.app.get("/diagnostic")
         self.assertTrue(200, response.status_code)
         self.assertEquals("application/json", response.content_type)
         jr = json.loads(response.data)
-        self.assertTrue(jr['version'] != None)
         self.assertEqual("ok", jr['message'])
 
     def test_callback(self):
@@ -23,5 +27,5 @@ class TestFixture(unittest.TestCase):
 
     def test_diagnostic_contains_version(self):
         response = self.app.get("/diagnostic")
-        self.assertTrue("version" in response.data)
+        self.assertTrue("version" in response.data, response.data)
 

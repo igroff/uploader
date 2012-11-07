@@ -1,11 +1,16 @@
 """
     Add any handlers that you need here.  A global 
-    application object 'app' will be made available to this
-    file at runtime.
+    application object 'app' will be made available in this context
+    at runtime.
+
     Some base set of functionality will be provided by the
     framework.  In addition to running the app in both debug
     and production modes, standard routes such as diagnostic
     and version routes will be added.
+    
+    The framework als provides helpers around responding with JSON/JSONP
+    as well as setting headers to provide assistance in identifying source
+    servers.
 
 decorators:
     make_my_response_json - this decorator allows the view to simply

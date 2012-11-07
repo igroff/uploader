@@ -33,6 +33,8 @@ freeze: setup
 	source .pyenv/bin/activate && pip freeze
 
 docs: .doc_build
+	rm -rf .doc_build/text/*
+	rm -rf .doc_build/doctrees/*
 	source .pyenv/bin/activate && sphinx-build -n -b text -d .doc_build/doctrees documentation .doc_build/text
 
 clean:

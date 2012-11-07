@@ -3,3 +3,5 @@ var/
 *.swp
 *.pyc
 .pyenv
+.doc_build/
+tmp/

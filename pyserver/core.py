@@ -14,6 +14,7 @@ from flask import Response
 from argparse import ArgumentParser
 from functools import wraps
 
+logging.basicConfig(format='%(asctime)s [%(levelname)s]: %(message)s')
 
 app = Flask(__name__)
 app.config['VERSION'] = os.environ.get('CURRENT_SHA', None)
@@ -57,15 +58,44 @@ app.process_response = global_response_handler
 @app.route("/diagnostic", methods=["GET"])
 @make_my_response_json
 def diagnostic_view():
+    """
+        Used to return the status of the application, including the version
+        of the running application.
+    
+        :status 200: returned as long as all checks return healthy
+        :status 500: returned in the case of any diagnostic tests failing
+    """
     return dict(message="ok", version=app.config['VERSION'])
 
 @app.route("/diagnostic/echo", methods=["GET"])
 @make_my_response_json
 def diagnostic_echo_view():
+    """
+        Helper endpoint for developing diagnostic checks.  Simply echoes back 
+        any values provided in the inbound request.
+    
+        :status 200: always returns OK
+    """
     d = request.values.to_dict()
     if 'callback' in d:
         del(d['callback'])
     return d
+
+@app.route("/diagnostic/fail", methods=["GET"])
+def fail():
+    """
+        This endpoint is designed to show how the application fails.  Can be used
+        to assist in creating monitors to check the application health and respond
+        to failures.
+
+        :status 500: always returns failure
+    """
+    raise Exception("Test exception so you know how the app behaves")
+
+@app.errorhandler(500)
+def general_error_handler(error):
+    logging.error("unhandled exception: %s" % error)
+
 
 # find and load our handler files, this isn't fancy and it's not intended to be
 for name in os.listdir("."):

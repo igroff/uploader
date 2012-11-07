@@ -12,7 +12,7 @@ Endpoints
 =========
 
 
-.. autoflask:: server:app
+.. autoflask:: pyserver.core:app
     :include-empty-docstring:
     :undoc-static:
 

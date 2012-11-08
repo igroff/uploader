@@ -21,7 +21,7 @@ var/logs:
 	mkdir -p .doc_build/doctrees
 
 setup: var/logs .pyenv
-	echo "setup"
+	@echo "setup"
 	
 start: setup 
 	@exec pyserver/bin/server start

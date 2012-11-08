@@ -36,3 +36,14 @@ GET /diagnostic
 
       * **500** -- returned in the case of any diagnostic tests
         failing
+
+GET /
+
+   Used to return the status of the application, including the version
+   of the running application.
+
+   Status Codes:
+      * **200** -- returned as long as all checks return healthy
+
+      * **500** -- returned in the case of any diagnostic tests
+        failing

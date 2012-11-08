@@ -27,6 +27,7 @@ start: setup
 	@exec pyserver/bin/server start
 
 test: setup
+	@find . -name '*.pyc' | xargs rm
 	@pyserver/bin/server test
 
 show_config:

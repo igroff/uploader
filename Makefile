@@ -45,4 +45,6 @@ clean:
 	- @rm -rf .pyenv
 	- @rm -rf var
 
+# allows for projects using this framework to extend the Makefile
+-include Makefile.child
 

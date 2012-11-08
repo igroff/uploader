@@ -51,7 +51,7 @@ def json_response(*args, **kwargs):
     if args:
         response_string = args[0]
     else:
-        response_string = json.dumps(kwargs)
+        response_string = json.dumps(kwargs, indent=2)
 
     if callback:
         response_string = "%s(%s);" % (callback, response_string)

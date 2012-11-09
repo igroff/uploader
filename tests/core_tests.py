@@ -27,6 +27,10 @@ class TestFixture(unittest.TestCase):
         response = self.app.get("/diagnostic/echo?callback=run_me&bare=true")
         self.assertEqual('run_me({\n  "bare": "true"\n});', response.data);
     
+    def test_callback_alone(self):
+        response = self.app.get("/diagnostic/echo?callback=run_me")
+        self.assertEqual('run_me({});', response.data);
+
     def test_no_callback(self):
         response = self.app.get("/diagnostic/echo?bare=true")
         self.assertEqual('{\n  "bare": "true"\n}', response.data);
@@ -51,6 +55,16 @@ class TestFixture(unittest.TestCase):
 
     def test_view_returning_none_gets_handled_in_json_response(self):
         @app.route("/return_null", methods=["GET"])
+        @make_my_response_json
+        def null_view():
+            return None
+
+        response = self.app.get("/return_null")
+        jr = json.loads(response.data)
+        self.assertEqual({}, jr)
+
+    def test_view_returning_none_with_callback_gets_handled_in_json_response(self):
+        @app.route("/return_null?callback=run_me", methods=["GET"])
         @make_my_response_json
         def null_view():
             return None
@@ -118,3 +132,4 @@ class TestFixture(unittest.TestCase):
         response = self.app.get("/return_list")
         self.assertEqual(200, response.status_code)
         jr = json.loads(response.data)
+        self.assertEqual([1,2,3], jr)

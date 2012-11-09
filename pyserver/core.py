@@ -156,10 +156,10 @@ def general_error_handler(error):
     logging.error("unhandled exception: %s" % error)
 
 # find and load our handler files, this isn't fancy and it's not intended to be
-for name in os.listdir("."):
+for name in os.listdir("./handlers"):
     split_name = os.path.splitext(name)
     if "handler" in split_name[0] and split_name[1] == ".py":
-        execfile(name)
+        execfile(os.path.join("./handlers", name))
 
 
 if (__name__ == "__main__"):
@@ -179,10 +179,10 @@ if (__name__ == "__main__"):
     else:
         import unittest
         import sys
-        for name in os.listdir("."):
+        for name in os.listdir("./tests"):
             split_name = os.path.splitext(name)
             if "tests" in split_name[0] and split_name[1] == ".py":
-                execfile(name)
+                execfile(os.path.join("./tests", name))
         # unittest uses command line params, so remove ours
         sys.argv.pop()
         unittest.main() 

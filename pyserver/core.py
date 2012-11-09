@@ -40,30 +40,30 @@ def try_run(this):
     except:
         return None
 
-def coerce_into_number(value):
+def convert_into_number(value):
     return try_run(lambda: int(value)) or try_run(lambda: float(value)) or value
 
-def coerce_types_in_dictionary(this_dictionary):
+def convert_types_in_dictionary(this_dictionary):
     into_this_dictionary = {}
     for key, value in this_dictionary.items():
         if type(value) == dict:
-            value = coerce_types_in_dictionary(value)
+            value = convert_types_in_dictionary(value)
         elif type(value) == list:
-            value = coerce_types_in_list(value)
+            value = convert_types_in_list(value)
         else:
-            value = coerce_into_number(value)
+            value = convert_into_number(value)
         into_this_dictionary[key] = value
     return into_this_dictionary
 
-def coerce_types_in_list(this_list):
+def convert_types_in_list(this_list):
     into_this_list = []
     for item in this_list:
         if type(item) == list:
-            new_value = coerce_types_in_list(item)
+            new_value = convert_types_in_list(item)
         elif type(item) == dict:
-            new_value = coerce_types_in_dictionary(item)
+            new_value = convert_types_in_dictionary(item)
         else:
-            new_value = coerce_into_number(item)
+            new_value = convert_into_number(item)
         into_this_list.append(new_value)
     return into_this_list
 

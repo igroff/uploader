@@ -25,6 +25,48 @@ logging.basicConfig(
     level=app.config['LOG_LEVEL']
 )
 
+def remove_single_element_lists(d):
+    new_dict = {}
+    for key, value in d.items():
+        if type(value) == list and len(value) == 1:
+            new_dict[key] = value[0]
+        else:
+            new_dict[key] = value
+    return new_dict
+
+def try_run(this):
+    try:
+        return this()
+    except:
+        return None
+
+def coerce_into_number(value):
+    return try_run(lambda: int(value)) or try_run(lambda: float(value)) or value
+
+def coerce_types_in_dictionary(this_dictionary):
+    into_this_dictionary = {}
+    for key, value in this_dictionary.items():
+        if type(value) == dict:
+            value = coerce_types_in_dictionary(value)
+        elif type(value) == list:
+            value = coerce_types_in_list(value)
+        else:
+            value = coerce_into_number(value)
+        into_this_dictionary[key] = value
+    return into_this_dictionary
+
+def coerce_types_in_list(this_list):
+    into_this_list = []
+    for item in this_list:
+        if type(item) == list:
+            new_value = coerce_types_in_list(item)
+        elif type(item) == dict:
+            new_value = coerce_types_in_dictionary(item)
+        else:
+            new_value = coerce_into_number(item)
+        into_this_list.append(new_value)
+    return into_this_list
+
 def make_my_response_json(f):
     @wraps(f)
     def view_wrapper(*args, **kwargs):

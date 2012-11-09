@@ -55,3 +55,45 @@ class TestFixture(unittest.TestCase):
         response = self.app.get("/static/index.html")
         self.assertEqual(200, response.status_code)
         self.assertEqual("I'm static!", response.data.strip())
+
+    def test_coerce_dictionary_simple(self):
+        converted = coerce_types_in_dictionary(dict(myint="1", myfloat="1.3"))
+        self.assertEqual(1, converted['myint'])
+        self.assertEqual(1.3, converted['myfloat'])
+    
+    @app.route("/coerce", methods=["GET", "POST"])
+    @make_my_response_json
+    def coerce():
+        d = request.values.to_dict(flat=False)
+        ret_val = coerce_types_in_dictionary(remove_single_element_lists(d))
+        return ret_val
+
+    def test_coerce_dictionary_request(self):
+        response = self.app.get("/coerce?myint=1&myfloat=1.3")
+        self.assertEqual(200, response.status_code)
+        converted = json.loads(response.data)
+        self.assertEqual(1, converted['myint'])
+        self.assertEqual(1.3, converted['myfloat'])
+
+    def test_coerce_dictionary_request_multiple(self):
+        response = self.app.post("/coerce?myint=2&myint=4")
+        self.assertEqual(200, response.status_code)
+        converted = json.loads(response.data)
+        self.assertEqual([2,4], converted['myint'])
+
+    def test_coerce_dictionary_nested(self):   
+        converted = coerce_types_in_dictionary(
+            dict(myint="1", myfloat="1.3", child=dict(childint="3"))
+        )
+        self.assertEqual(1, converted['myint'])
+        self.assertEqual(1.3, converted['myfloat'])
+        self.assertEqual(3, converted['child']['childint'])
+
+    def test_coerce_dictionary_nested_list(self):   
+        converted = coerce_types_in_dictionary(
+            dict(myint="1", myfloat="1.3", child=dict(childint="3"), childlist=["1", 2])
+        )
+        self.assertEqual(1, converted['myint'])
+        self.assertEqual(1.3, converted['myfloat'])
+        self.assertEqual(3, converted['child']['childint'])
+        self.assertEqual([1,2], converted['childlist'])

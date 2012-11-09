@@ -60,18 +60,18 @@ class TestFixture(unittest.TestCase):
             return None
 
         response = self.app.get("/return_null")
+        self.assertEqual(200, response.status_code)
         jr = json.loads(response.data)
         self.assertEqual({}, jr)
 
-    def test_view_returning_none_with_callback_gets_handled_in_json_response(self):
-        @app.route("/return_null?callback=run_me", methods=["GET"])
+    def test_view_returning_dict_with_callback_in_request(self):
+        @app.route("/bad_callback", methods=["GET"])
         @make_my_response_json
         def null_view():
-            return None
+            return dict(pants="blue")
 
-        response = self.app.get("/return_null")
-        jr = json.loads(response.data)
-        self.assertEqual({}, jr)
+        response = self.app.get("/bad_callback?callback=run_me")
+        self.assertEquals(200, response.status_code)
 
     def test_static_works_at_all(self):
         with open("./static/index.html", "w+") as sf:

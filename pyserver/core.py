@@ -96,7 +96,7 @@ def json_response(*args, **kwargs):
     # we'll remove the callback if it was passed in kwargs, since we can 
     # get a callback from multiple places we check specifically for its 
     # presence
-    if 'callback' in kwargs: 
+    if 'callback' in kwargs:
         del(kwargs['callback'])
 
     if args and type(args[0]) == list:

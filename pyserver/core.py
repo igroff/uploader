@@ -59,7 +59,7 @@ def json_response(*args, **kwargs):
     return (
         response_string,
         status_code,
-        {"Content-Type": "application/json", "Cache-Control": "Private"}
+        {"Content-Type": "application/json", "Cache-Control": "no-cache", "Pragma": "no-cache"}
     )
 
 def global_response_handler(response):

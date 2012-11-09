@@ -1,0 +1,2 @@
+support module include
+can we have this Makefile delegate out to other children so the user of this can have their own

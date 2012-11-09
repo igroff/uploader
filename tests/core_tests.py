@@ -49,7 +49,7 @@ class TestFixture(unittest.TestCase):
         response = self.app.get("/test_me")
         self.assertEqual("this is a test response", response.data)
 
-    def test_view_returning_non_gets_handled_in_json_response(self):
+    def test_view_returning_none_gets_handled_in_json_response(self):
         @app.route("/return_null", methods=["GET"])
         @make_my_response_json
         def null_view():
@@ -107,3 +107,14 @@ class TestFixture(unittest.TestCase):
         self.assertEqual(1.3, converted['myfloat'])
         self.assertEqual(3, converted['child']['childint'])
         self.assertEqual([1,2], converted['childlist'])
+
+
+    @app.route("/return_list", methods=["GET", "POST"])
+    @make_my_response_json
+    def return_list():
+        return [1,2,3]
+
+    def test_return_list_json(self):
+        response = self.app.get("/return_list")
+        self.assertEqual(200, response.status_code)
+        jr = json.loads(response.data)

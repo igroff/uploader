@@ -70,7 +70,13 @@ def convert_types_in_list(this_list):
 def make_my_response_json(f):
     @wraps(f)
     def view_wrapper(*args, **kwargs):
-        return json_response(**(f(*args, **kwargs) or {}))
+        view_return = f(*args, **kwargs)
+        if type(view_return) == dict:
+            return json_response(**view_return)
+        elif type(view_return) == list:
+            return json_response(view_return)
+        else:
+            return json_response(**{})
     return view_wrapper
 
 def json_response(*args, **kwargs):
@@ -87,10 +93,12 @@ def json_response(*args, **kwargs):
 
     callback = kwargs.get('callback', None) or request.values.get('callback', None)
     
-    if 'callback' in kwargs:
+    if callback: 
         del(kwargs['callback'])
 
-    if args:
+    if args and type(args[0]) == list:
+        response_string = json.dumps(args[0], indent=2)
+    elif args:
         response_string = args[0]
     else:
         response_string = json.dumps(kwargs, indent=2)

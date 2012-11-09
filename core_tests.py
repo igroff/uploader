@@ -35,6 +35,16 @@ class TestFixture(unittest.TestCase):
         response = self.app.get("/diagnostic")
         self.assertTrue("version" in response.data, response.data)
 
+    @app.route("/test_me", methods=["GET"])
+    def im_here_for_testing():
+        """ this is my documentation for this endpoint
+
+            :statuscode 200: returned if everything is ok
+            :statuscode 500: returned if nothing is ok
+        """
+
+        return "this is a test response"
+
     def test_can_find_view_from_handler_file(self):
         response = self.app.get("/test_me")
         self.assertEqual("this is a test response", response.data)

@@ -42,13 +42,3 @@ decorators:
     a well formatted JSON response with correct content type as well
     as support for JSONP
 """
-@app.route("/test_me", methods=["GET"])
-def im_here_for_testing():
-    """ this is my documentation for this endpoint
-
-        :statuscode 200: returned if everything is ok
-        :statuscode 500: returned if nothing is ok
-    """
-
-    return "this is a test response"
-

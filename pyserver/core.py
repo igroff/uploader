@@ -18,6 +18,7 @@ app = Flask(__name__, static_folder=STATIC_DIR, template_folder=TEMPLATE_DIR)
 app.config['VERSION'] = os.environ.get('CURRENT_SHA', None)
 app.config['X-HOSTNAME'] = os.environ.get('XHOSTNAME', '')
 app.config['LOG_LEVEL'] = os.environ.get('LOG_LEVEL', 'WARNING')
+app.config['HANDLER_FILE'] = os.environ.get('HANDLER_FILE', None)
 
 logging.basicConfig(
     format='%(asctime)s [%(levelname)s]: %(message)s',
@@ -166,11 +167,14 @@ def fail():
 def general_error_handler(error):
     logging.error("unhandled exception: %s" % error)
 
-# find and load our handler files, this isn't fancy and it's not intended to be
-for name in os.listdir("./handlers"):
-    split_name = os.path.splitext(name)
-    if "handler" in split_name[0] and split_name[1] == ".py":
-        execfile(os.path.join("./handlers", name))
+if app.config['HANDLER_FILE']:
+    execfile(app.config['HANDLER_FILE'])
+else:
+    # find and load our handler files, this isn't fancy and it's not intended to be
+    for name in os.listdir("./handlers"):
+        split_name = os.path.splitext(name)
+        if "handler" in split_name[0] and split_name[1] == ".py":
+            execfile(os.path.join("./handlers", name))
 
 
 if (__name__ == "__main__"):

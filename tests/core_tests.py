@@ -76,11 +76,13 @@ class TestFixture(unittest.TestCase):
     def test_static_works_at_all(self):
         if not os.path.exists("./static/"):
             os.makedirs("./static/")
-        with open("./static/index.html", "w+") as sf:
+        with open("./static/core_test_index.html", "w+") as sf:
             sf.write("I'm static!")
-        response = self.app.get("/static/index.html")
+        response = self.app.get("/static/core_test_index.html")
         self.assertEqual(200, response.status_code)
         self.assertEqual("I'm static!", response.data.strip())
+        if os.path.exists("./static/core_test_index.html"):
+            os.unlink("./static/core_test_index.html")
 
     def test_convert_dictionary_simple(self):
         converted = convert_types_in_dictionary(dict(myint="1", myfloat="1.3"))

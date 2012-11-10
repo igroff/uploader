@@ -167,14 +167,18 @@ def fail():
 def general_error_handler(error):
     logging.error("unhandled exception: %s" % error)
 
+
 if app.config['HANDLER_FILE']:
+    logging.info("loading handlers from %s" % (app.config['HANDLER_FILE']))
     execfile(app.config['HANDLER_FILE'])
 else:
     # find and load our handler files, this isn't fancy and it's not intended to be
     for name in os.listdir("./handlers"):
         split_name = os.path.splitext(name)
-        if "handler" in split_name[0] and split_name[1] == ".py":
-            execfile(os.path.join("./handlers", name))
+        if split_name[1] == ".py" and not split_name[0] == "__init__":
+            handler_file = os.path.join("./handlers", name)
+            logging.info("loading handlers from %s" % (handler_file))
+            execfile(handler_file)
 
 
 if (__name__ == "__main__"):

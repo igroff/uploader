@@ -74,6 +74,8 @@ class TestFixture(unittest.TestCase):
         self.assertEquals(200, response.status_code)
 
     def test_static_works_at_all(self):
+        if not os.path.exists("./static/"):
+            os.makedirs("./static/")
         with open("./static/index.html", "w+") as sf:
             sf.write("I'm static!")
         response = self.app.get("/static/index.html")

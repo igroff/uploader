@@ -118,6 +118,7 @@ def json_response(*args, **kwargs):
 
 def global_response_handler(response):
     response.headers['X-HOSTNAME'] = app.config['X-HOSTNAME']
+    response.headers['X-APP-VERSION'] = app.config['VERSION']
     return response
 
 app.process_response = global_response_handler    

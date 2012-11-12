@@ -1,4 +1,4 @@
-.PHONY: clean start test debug setup freeze docs show_config
+.PHONY: clean start test debug setup freeze docs show_config git_hooks
 
 debug: setup
 	@pyserver/bin/server debug
@@ -45,6 +45,9 @@ docs: .doc_build .pyenv
 clean:
 	- @rm -rf .pyenv
 	- @rm -rf var
+
+git_hooks:
+	@cp pyserver/etc/git_hooks/* .git/hooks
 
 # allows for projects using this framework to extend the Makefile
 -include Makefile.child

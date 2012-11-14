@@ -86,6 +86,7 @@ def json_response(*args, **kwargs):
         or kwargs to be passed formatted correctly for the response.
         Also sets the Content-Type of the response to application/json
     """
+    content_type = "application/json";
     # if provided, use the status code otherwise default to 200
     status_code = kwargs.get('status_code', 200)
     # remove it so it doesn't end up in our response
@@ -109,11 +110,12 @@ def json_response(*args, **kwargs):
 
     if callback:
         response_string = "%s(%s);" % (callback, response_string)
+        content_type = "application/javascript";
         
     return (
         response_string,
         status_code,
-        {"Content-Type": "application/json", "Cache-Control": "no-cache", "Pragma": "no-cache"}
+        {"Content-Type": content_type, "Cache-Control": "no-cache", "Pragma": "no-cache"}
     )
 
 def global_response_handler(response):

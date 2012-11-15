@@ -1,4 +1,4 @@
-.PHONY: clean start test debug setup freeze docs show_config git_hooks
+.PHONY: clean start test debug setup freeze docs show_config git_hooks crontab
 
 debug: setup
 	@pyserver/bin/server debug
@@ -48,6 +48,9 @@ clean:
 
 git_hooks:
 	@cp pyserver/etc/git_hooks/* .git/hooks
+
+crontab:
+	@if [ -f ./crontab ]; then cat ./crontab | crontab; fi
 
 # allows for projects using this framework to extend the Makefile
 -include Makefile.child

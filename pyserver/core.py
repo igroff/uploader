@@ -78,6 +78,8 @@ def make_my_response_json(f):
             return json_response(**view_return)
         elif type(view_return) == list:
             return json_response(view_return)
+        elif type(view_return) == int:
+            return json_response(**dict(status_code=view_return))
         else:
             return json_response(**{})
     return view_wrapper

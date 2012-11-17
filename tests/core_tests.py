@@ -138,3 +138,12 @@ class TestFixture(unittest.TestCase):
         self.assertEqual(200, response.status_code)
         jr = json.loads(response.data)
         self.assertEqual([1,2,3], jr)
+
+    @app.route("/can_return_status", methods=["GET", "POST"])
+    @make_my_response_json
+    def return_int():
+        return 503 
+
+    def test_can_return_statuscode(self):
+        response = self.app.get("/can_return_status")
+        self.assertEqual(503, response.status_code)

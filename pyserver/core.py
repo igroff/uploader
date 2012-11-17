@@ -8,8 +8,10 @@ from os import path
 
 from flask import Flask, request
 from flask import render_template, jsonify
+from flask import g
 from argparse import ArgumentParser
 from functools import wraps
+from werkzeug import secure_filename
 
 STATIC_DIR = os.environ.get('STATIC_DIR', path.join(os.getcwd(), 'static'))
 TEMPLATE_DIR = os.environ.get('TEMPLATE_DIR', path.join(os.getcwd(), 'templates'))
@@ -19,14 +21,13 @@ app.config['VERSION'] = os.environ.get('CURRENT_SHA', None)
 app.config['X-HOSTNAME'] = os.environ.get('XHOSTNAME', '')
 app.config['LOG_LEVEL'] = os.environ.get('LOG_LEVEL', 'WARNING')
 app.config['HANDLER_FILE'] = os.environ.get('HANDLER_FILE', None)
+app.config['USER_COOKIE_NAME'] = os.environ.get('USER_COOKIE_NAME', 'UCNID')
 
 logging.basicConfig(
     format='%(asctime)s [%(levelname)s]: %(message)s',
     stream=sys.stderr,
     level=app.config['LOG_LEVEL']
 )
-
-OK_RESPONSE = dict(message="OK")
 
 def remove_single_element_lists(d):
     new_dict = {}
@@ -127,7 +128,12 @@ def global_response_handler(response):
     response.headers['X-APP-VERSION'] = app.config['VERSION']
     return response
 
+def global_request_handler():
+    # this needs to be safe for use by the app
+    g.user_token = secure_filename(request.cookies.get(app.config['USER_COOKIE_NAME'], 'DEFAULT'))
+
 app.process_response = global_response_handler    
+app.preprocess_request = global_request_handler
 
 ################################################################################
 # views 
@@ -143,7 +149,10 @@ def diagnostic_view():
         :statuscode 200: returned as long as all checks return healthy
         :statuscode 500: returned in the case of any diagnostic tests failing
     """
-    return dict(message="ok", version=app.config['VERSION'])
+    return dict(message="ok",
+        version=app.config['VERSION'],
+        uid=g.user_token
+    )
 
 @app.route("/diagnostic/echo", methods=["GET"])
 @make_my_response_json

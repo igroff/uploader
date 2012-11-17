@@ -5,7 +5,7 @@ from pyserver.store import JSONStore
 app.config['STORAGE_ROOT'] = os.environ.get('STORAGE_ROOT', './store/')
 
 def get_named_store(name):
-    return JSONStore(os.path.join(app.config['STORAGE_ROOT'], name))
+    return JSONStore(os.path.join(app.config['STORAGE_ROOT'], g.user_token, name))
         
     
 @app.route("/store/<store_name>", methods=['POST'])

@@ -26,6 +26,8 @@ logging.basicConfig(
     level=app.config['LOG_LEVEL']
 )
 
+OK_RESPONSE = dict(message="OK")
+
 def remove_single_element_lists(d):
     new_dict = {}
     for key, value in d.items():

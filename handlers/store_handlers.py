@@ -35,6 +35,8 @@ def get_item(store_name, id):
     if item:
         combined = json.loads(item['json'])
         for key,value in item.items():
+            if key == "rowid":
+                combined['id'] = value
             if not key == "json":
                 combined[key] = value
     return combined if item else 404
@@ -46,6 +48,8 @@ def get_list(store_name):
     for item in get_named_store(store_name).scan():
         combined = json.loads(item['json'])
         for key, value in item.items():
+            if key == "rowid":
+                combined['id'] = value
             if not key == "json":
                 combined[key] = value
         items.append(combined)

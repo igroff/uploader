@@ -26,6 +26,7 @@ class StoreFixture(unittest.TestCase):
         loaded_data = json.loads(response.data)
         self.assertEqual(1, loaded_data['one'])
         self.assertEqual(id, loaded_data['id'])
+        self.assertFalse("rowid" in loaded_data)
         self.assertEqual("the name", loaded_data['name'])
 
     def test_update_and_list(self):

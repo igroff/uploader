@@ -23,8 +23,7 @@ class StoreFixture(unittest.TestCase):
 
         response = self.app.get("/store/%s/%d" % (self.store_name, id))
         self.assertEqual(200, response.status_code)
-        jr = json.loads(response.data)
-        loaded_data = json.loads(jr['json'])
+        loaded_data = json.loads(response.data)
         self.assertEqual(1, loaded_data['one'])
         self.assertEqual("the name", loaded_data['name'])
 
@@ -41,8 +40,8 @@ class StoreFixture(unittest.TestCase):
         response = self.app.get("/store/%s" % self.store_name)
         self.assertEqual(200, response.status_code)
         jr = json.loads(response.data)
-        self.assertEqual(1, len(jr))
-        data = json.loads(jr[0]['json'])
+        self.assertEqual(1, len(jr), response.data)
+        data = jr[0]
         self.assertEqual(1, data['one'])
         self.assertEqual(2, data['two'])
         self.assertEqual("the name", data['name'])
@@ -58,8 +57,7 @@ class StoreFixture(unittest.TestCase):
         
         response = self.app.get("/store/%s" % self.store_name)
         self.assertEqual(200, response.status_code)
-        jr = json.loads(response.data)
-        data = json.loads(jr[0]['json'])
+        data = json.loads(response.data)[0]
         self.assertFalse('one' in data, data)
         self.assertEqual("the name", data['name'])
 

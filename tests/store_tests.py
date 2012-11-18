@@ -38,7 +38,7 @@ class StoreFixture(unittest.TestCase):
         self.app.post("/store/%s/%d" % (self.store_name, id), data=data)
     
 
-        response = self.app.get("/store/list/%s" % self.store_name)
+        response = self.app.get("/store/%s" % self.store_name)
         self.assertEqual(200, response.status_code)
         jr = json.loads(response.data)
         self.assertEqual(1, len(jr))
@@ -56,7 +56,7 @@ class StoreFixture(unittest.TestCase):
         response = self.app.post("/store/%s/%d" % (self.store_name, id), data=dict(one='null'))
         self.assertEqual(200, response.status_code)
         
-        response = self.app.get("/store/list/%s" % self.store_name)
+        response = self.app.get("/store/%s" % self.store_name)
         self.assertEqual(200, response.status_code)
         jr = json.loads(response.data)
         data = json.loads(jr[0]['json'])

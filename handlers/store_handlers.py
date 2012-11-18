@@ -34,7 +34,7 @@ def get_item(store_name, id):
     item = get_named_store(store_name).get(id)
     return item if item else 404
 
-@app.route("/store/list/<store_name>", methods=["GET"])
+@app.route("/store/<store_name>", methods=["GET"])
 @make_my_response_json
 def get_list(store_name):
     return get_named_store(store_name).scan()

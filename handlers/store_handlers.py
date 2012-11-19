@@ -11,15 +11,21 @@ def get_named_store(name):
 @app.route("/store/<store_name>", methods=['POST'])
 @make_my_response_json
 def store_in(store_name):
-    data = request.values.to_dict(flat=False)
-    data = convert_types_in_dictionary(remove_single_element_lists(data))
+    if request.json:
+        data = request.json
+    else:
+        data = request.values.to_dict(flat=False)
+        data = convert_types_in_dictionary(remove_single_element_lists(data))
     return dict(id=get_named_store(store_name).append(data))
 
 @app.route("/store/<store_name>/<int:id>", methods=['POST'])
 @make_my_response_json
 def update(store_name, id):
-    data = request.values.to_dict(flat=False)
-    data = convert_types_in_dictionary(remove_single_element_lists(data))
+    if request.json:
+        data = request.json
+    else:
+        data = request.values.to_dict(flat=False)
+        data = convert_types_in_dictionary(remove_single_element_lists(data))
     stored = json.loads(get_named_store(store_name).get(id)['json'])
     for key, value in data.items():
         if (value == None or value == 'null') and key in stored:

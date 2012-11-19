@@ -29,6 +29,22 @@ class StoreFixture(unittest.TestCase):
         self.assertFalse("rowid" in loaded_data)
         self.assertEqual("the name", loaded_data['name'])
 
+    def test_store_data_inbound_json(self):
+        data = dict(one=1, name="the name")
+        response = self.app.post("/store/%s" % self.store_name, content_type="application/json", data=json.dumps(data))
+        self.assertEqual(200, response.status_code)
+        new_id = json.loads(response.data)['id']
+        self.assertTrue(type(new_id) == int)
+
+
+        response = self.app.get("/store/%s/%d" % (self.store_name, new_id))
+        self.assertEqual(200, response.status_code)
+        loaded_data = json.loads(response.data)
+        self.assertEqual(1, loaded_data['one'])
+        self.assertEqual(new_id, loaded_data['id'])
+        self.assertFalse("rowid" in loaded_data)
+        self.assertEqual("the name", loaded_data['name'])
+
     def test_update_and_list(self):
         data = dict(one=1, name="the name")
         response = self.app.post("/store/%s" % self.store_name, data=data)
@@ -37,6 +53,33 @@ class StoreFixture(unittest.TestCase):
 
         data['two'] = 2
         self.app.post("/store/%s/%d" % (self.store_name, id), data=data)
+    
+
+        response = self.app.get("/store/%s" % self.store_name)
+        self.assertEqual(200, response.status_code)
+        jr = json.loads(response.data)
+        self.assertEqual(1, len(jr), response.data)
+        data = jr[0]
+        self.assertEqual(1, data['one'])
+        self.assertEqual(2, data['two'])
+        self.assertEqual("the name", data['name'])
+
+    def test_update_and_list_json(self):
+        data = dict(one=1, name="the name")
+        response = self.app.post(
+            "/store/%s" % self.store_name,
+            data=json.dumps(data),
+            content_type='application/json'
+        )
+        self.assertEqual(200, response.status_code)
+        id = json.loads(response.data)['id']
+
+        data['two'] = 2
+        self.app.post(
+            "/store/%s/%d" % (self.store_name, id),
+            data=json.dumps(data),
+            content_type='application/json'
+        )
     
 
         response = self.app.get("/store/%s" % self.store_name)

@@ -45,7 +45,11 @@ def try_run(this):
         return None
 
 def convert_into_number(value):
-    return try_run(lambda: int(value)) or try_run(lambda: float(value)) or value
+    as_number = try_run(lambda: int(value)) or try_run(lambda: float(value)) 
+    if as_number or as_number == 0:
+        return as_number
+    else:
+        return value
 
 def convert_types_in_dictionary(this_dictionary):
     into_this_dictionary = {}

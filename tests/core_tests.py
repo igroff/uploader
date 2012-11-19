@@ -120,8 +120,10 @@ class TestFixture(unittest.TestCase):
 
     def test_convert_dictionary_nested_list(self):   
         converted = convert_types_in_dictionary(
-            dict(myint="1", myfloat="1.3", child=dict(childint="3"), childlist=["1", 2])
+            dict(myzero="0", myint="1", myfloat="1.3", child=dict(childint="3"), childlist=["1", 2])
         )
+        self.assertEqual(0, convert_into_number("0"))
+        self.assertEqual(0, converted['myzero'])
         self.assertEqual(1, converted['myint'])
         self.assertEqual(1.3, converted['myfloat'])
         self.assertEqual(3, converted['child']['childint'])

@@ -1,4 +1,6 @@
+SHELL=/bin/bash
 .PHONY: clean start test debug setup freeze docs show_config git_hooks crontab
+
 
 debug: setup
 	@pyserver/bin/server debug

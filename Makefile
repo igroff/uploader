@@ -48,8 +48,9 @@ docs: .doc_build .pyenv
 	cp .doc_build/text/index.txt README
 
 clean:
-	- @rm -rf .pyenv
-	- @rm -rf var
+	- @rm -rf .pyenv/
+	- @rm -rf var/
+	- @rm -rf tmp/
 
 git_hooks:
 	@cp pyserver/etc/git_hooks/* .git/hooks

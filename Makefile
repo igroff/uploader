@@ -13,6 +13,9 @@ debug: setup
 	source .pyenv/bin/activate && cd tmp/ && unzip birkenfeld-sphinx-contrib-f60d4a35adab.zip
 	source .pyenv/bin/activate && cd tmp/birkenfeld-sphinx-contrib-f60d4a35adab/httpdomain && python setup.py build
 	source .pyenv/bin/activate && cd tmp/birkenfeld-sphinx-contrib-f60d4a35adab/httpdomain && python setup.py install
+	cd tmp/ && curl -O http://public.intimidatingbits.com/apsw-3.7.14.1-r1.zip
+	cd tmp/ && unzip apsw-3.7.14.1-r1.zip
+	source .pyenv/bin/activate && cd tmp/apsw-3.7.14.1-r1 && python setup.py build --enable-all-extensions install
 	-rm -rf tmp/
 
 var/logs: 

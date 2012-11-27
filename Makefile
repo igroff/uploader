@@ -32,7 +32,7 @@ start: setup
 	@exec pyserver/bin/server start
 
 test: setup
-	@find . -name '*.pyc' | xargs rm
+	-@find . -name '*.pyc' | xargs rm
 	@export STORAGE_ROOT=./output && pyserver/bin/server test
 
 show_config:

@@ -71,10 +71,16 @@ def get_data_for(key=None):
         :statuscode 404: no stored data found for provided key
     """
     content_type, value = read_it(key)
+    callback = request.values.get("callback", None)
     if not value:
-        return json_response(**dict(message="no data for key", status_code=404))
+        if callback:
+            # this is specifically to handle the (most common) use case of JSONP blowing
+            # chunks if the response is a 404 as the borwser will not do anything further
+            # causing the callback in your javascript library to never fire
+            return json_response(**dict(message="no data for key"))
+        else:
+            return json_response(**dict(message="no data for key", status_code=404))
     else:
-        callback = request.values.get("callback", None)
         if callback:
             return ("%s(%s);" % (callback, value), 200, {"Content-Type": "application/javascript"})
         else:

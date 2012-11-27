@@ -9,6 +9,15 @@ class KVTestFixture(unittest.TestCase):
         self.app = app.test_client()
         self.app.debug = True
 
+    def test_no_value_exists(self):
+        response = self.app.get("/kv/dummy")
+        self.assertEquals(404, response.status_code)
+
+    def test_no_value_exists_jsonp(self):
+        response = self.app.get("/kv/dummy?callback=p")
+        self.assertEquals(200, response.status_code)
+        self.assertEquals('p({\n  "message": "no data for key"\n});', response.data)
+
     def test_odd_content_type(self):
         response = self.app.post("/kv/my_key", data="some data", content_type="superpants")
         self.assertTrue(200, response.status_code)

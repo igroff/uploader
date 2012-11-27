@@ -6,3 +6,4 @@ var/
 .doc_build/
 tmp/
 store/
+output/

@@ -4,7 +4,6 @@ from uuid import uuid4
 
 class StoreFixture(unittest.TestCase):
     def setUp(self):
-        app.config['STORAGE_ROOT'] = "./test_output"
         app.config['TESTING'] = True
         self.store_name = str(uuid4())
         self.app = app.test_client()

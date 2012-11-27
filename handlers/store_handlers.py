@@ -3,7 +3,7 @@ import os.path
 from pyserver.store import JSONStore
 
 
-app.config['STORAGE_ROOT'] = os.path.join(os.environ.get('STORAGE_ROOT', './store'), "jstore")
+app.config['STORAGE_ROOT'] = os.path.join(os.environ.get('STORAGE_ROOT', '.'), "jstore")
 
 
 def get_named_store(name):

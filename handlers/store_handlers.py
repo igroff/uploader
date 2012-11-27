@@ -1,8 +1,10 @@
 import os
+import os.path
 from pyserver.store import JSONStore
 
 
-app.config['STORAGE_ROOT'] = os.environ.get('STORAGE_ROOT', './store/')
+app.config['STORAGE_ROOT'] = os.path.join(os.environ.get('STORAGE_ROOT', './store'), "jstore")
+
 
 def get_named_store(name):
     return JSONStore(os.path.join(app.config['STORAGE_ROOT'], g.user_token, name))

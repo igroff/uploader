@@ -6,6 +6,12 @@
 Welcome to hipflask's documentation!
 =========================================
 
+Configuration
+=============
+
+SQLITE_VFS = Used to set the VFS used during SQLite connections.  Can be any of the
+    valid VFS choices unix-dotfile (default for portability), unix-excl, unix-none,
+    unix-namedsem or the SQLite default 'unix'
 
 Endpoints
 =========

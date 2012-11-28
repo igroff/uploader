@@ -27,7 +27,7 @@ class JSONStore(object):
         return data
 
     def get_conn(self):
-        conn = apsw.Connection(self.path, vfs="unix-dotfile")
+        conn = apsw.Connection(self.path, vfs=os.environ.get("SQLITE_VFS", "unix-dotfile"))
         return conn
     
     def destroy(self):

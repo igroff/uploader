@@ -1,6 +1,6 @@
 import os
 import json
-import sqlite3
+import apsw
 
 class JSONStore(object):
 
@@ -19,7 +19,7 @@ class JSONStore(object):
 
     def _exec_statement(self, sql, params=()):
         with self.get_conn() as conn:
-            conn.execute(sql, params)
+            conn.cursor().execute(sql, params)
 
     def convert(self, data):
         if type(data) == dict:
@@ -27,8 +27,7 @@ class JSONStore(object):
         return data
 
     def get_conn(self):
-        conn = sqlite3.connect(self.path, timeout=60)
-        conn.row_factory = sqlite3.Row
+        conn = apsw.Connection(self.path, vfs="unix-dotfile")
         return conn
     
     def destroy(self):
@@ -38,7 +37,7 @@ class JSONStore(object):
         with self.get_conn() as conn:
             cursor = conn.cursor()
             cursor.execute(self._append, [self.convert(data), order])
-            return cursor.lastrowid
+            return conn.last_insert_rowid()
     
     def update(self, id, data, order=0):
         self._exec_statement(self._update, [order, self.convert(data), id])
@@ -46,16 +45,20 @@ class JSONStore(object):
     def scan(self):
         with self.get_conn() as conn:
             entries = []
-            for row in conn.execute(self._scan):
-               entries.append({ key:row[key] for key in row.keys() }) 
+            cursor = conn.cursor()
+            for row in cursor.execute(self._scan):
+               entries.append({ zt[0][0]:zt[1] for zt in zip(cursor.getdescription(), row) }) 
         return entries
     
     def get(self, id):
         with self.get_conn() as conn:
-            row = conn.execute(self._get, [id]).fetchone()
-            return { key:row[key] for key in row.keys() } if row else None
+            cursor = conn.cursor()
+            d = None
+            for row in  cursor.execute(self._get, [id]):
+                d = { zt[0][0]:zt[1] for zt in zip(cursor.getdescription(), row) }
+            return d
 
     def delete(self, id):
         with self.get_conn() as conn:
-            conn.execute(self._delete, [id])
+            conn.cursor().execute(self._delete, [id])
 

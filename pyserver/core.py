@@ -3,6 +3,7 @@
 import os
 import sys
 import json
+from cache import FileSystemCache
 import logging
 from os import path
 
@@ -22,6 +23,8 @@ app.config['X-HOSTNAME'] = os.environ.get('XHOSTNAME', '')
 app.config['LOG_LEVEL'] = os.environ.get('LOG_LEVEL', 'WARNING')
 app.config['HANDLER_FILE'] = os.environ.get('HANDLER_FILE', None)
 app.config['USER_COOKIE_NAME'] = os.environ.get('USER_COOKIE_NAME', 'UCNID')
+app.config['CACHE_ROOT'] = os.environ.get('CACHE_ROOT', './cache')
+app.config['_CACHE'] = FileSystemCache(app.config['CACHE_ROOT'])
 
 logging.basicConfig(
     format='%(asctime)s [%(levelname)s]: %(message)s',
@@ -75,6 +78,28 @@ def convert_types_in_list(this_list):
         into_this_list.append(new_value)
     return into_this_list
 
+def cache_my_response(vary_by=None, expiration=900):
+    def cache_wrapper_decorator(f):
+        @wraps(f)
+        def cache_wrapper(*args, **kwargs):
+            if not vary_by:
+                cache_key = request.url
+            else:
+                from StringIO import StringIO
+                key_buffer = StringIO()
+                key_buffer.write(request.url)
+                for vary_by_this in vary_by:
+                    key_buffer.write("%s" % request.values.get(vary_by_this, ''))
+                cache_key = key_buffer.getvalue()
+            return app.config['_CACHE'].get_or_return_from_cache(
+                cache_key,
+                expiration,
+                lambda *args, **kwargs: f(*args, **kwargs),
+                force_refresh = request.values.get('_reload_cache', False)
+            )
+        return cache_wrapper
+    return cache_wrapper_decorator
+            
 def make_my_response_json(f):
     @wraps(f)
     def view_wrapper(*args, **kwargs):

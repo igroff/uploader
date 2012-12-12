@@ -3,6 +3,15 @@ Welcome to hipflask's documentation!
 ************************************
 
 
+Configuration
+*************
+
+SQLITE_VFS = Used to set the VFS used during SQLite connections.  Can
+be any of the valid VFS choices unix-dotfile (default for
+portability), unix-excl, unix-none, unix-namedsem or the SQLite
+default 'unix'
+
+
 Endpoints
 *********
 
@@ -47,3 +56,96 @@ GET /
 
       * **500** -- returned in the case of any diagnostic tests
         failing
+
+POST /store/(store_name)/(int: id)
+
+GET /store/(store_name)/(int: id)
+
+   Returns the data stored in the list 'store_name' with the provided
+   id, or an empty JSON object '{}' if an item with the associated id
+   doesn't exist.
+
+   Example:
+
+   curl http://store.example.com:5000/store/my_test_list/1
+
+   returns: { "id": 1, "number": 1, "name": "pants" }
+
+   curl http://store.example.com:5000/store/my_test_list/1?callback=cb
+
+   returns: cb({ "id": 1, "name": "pants", "number": 1 });
+
+   Status Codes:
+      * **200** -- item exists, and was returned
+
+      * **200** -- item does NOT exist, but request included a
+        'callback' parameter
+
+      * **404** -- no item by the provided id was found, no callback
+        provided
+
+DELETE /store/(store_name)/(int: id)
+
+POST /store/(store_name)
+
+   Save the data provided within the named store. Each POST to this
+   endpoint  referring to the same 'store_name' will append data a
+   list referred to by  'store_name'.
+
+   Data can be provided in one of two ways:
+
+   JSON - if the mimetype of the request isapplication/json and the
+   body
+      contains valid json, the json object will be appended.
+
+   Request Data - any data provided in the querystring or the body of
+      the requrest as form data will be stored.  Any numeric data will
+      be stored in such a way as to maintain its type.
+
+   curl http://store.example.com:5000/store/my_test_list --data
+   "number=1" --data "name=pants"
+
+   will return data such as
+
+   { "id": 1, "number": 1, "name": "pants" }
+
+   Status Codes:
+      * **200** -- successsfully stored the data provided
+
+      * **5xx** -- an error occurred while trying to store the
+        provided data
+
+GET /store/(store_name)
+
+   curl http://store.example.com:5000/store/my_test_list [
+
+      {
+         "id": 1,  "number": 1,  "name": "pants"
+
+      }
+
+   ]
+
+POST /kv/(key)
+
+   Store all of the data provided in the body of the request,
+   associated with the specified key.  The data stored includes the
+   content type information of the request so on fetch the content
+   type will be set as it was when the data was stored.
+
+   Status Codes:
+      * **200** -- provided data has been successfully stored by the
+        given key
+
+GET /kv/(key)
+
+   For a given key return the data stored, if any.
+
+   Status Codes:
+      * **200** -- data found, and returned
+
+      * **404** -- no stored data found for provided key
+
+DELETE /kv/(key)
+
+   Removes all stored data for a given key.

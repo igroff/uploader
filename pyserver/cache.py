@@ -30,18 +30,18 @@ class FileSystemCache:
                 # if the cached item is expired, return None
                 if expiration < time.time():
                     if factory_method:
-                        return factory_method()
+                        return (False, factory_method())
                     else:
-                        return None
-                return f.read()
+                        return (False, None)
+                return (expiration, f.read())
         except IOError, e:
             # this is generally because the item isn't there
-            return factory_method()
+            return (False, factory_method())
 
     def get_or_return_from_cache(self, key, expiration, factory_method, force_refresh=False):
         if force_refresh:
-            item = factory_method()
+            item = (False, factory_method())
         else:
             item = self.read_from_cache(key, factory_method)
-        self.cache(key, item, expiration)
+        self.cache(key, item[1], expiration)
         return item

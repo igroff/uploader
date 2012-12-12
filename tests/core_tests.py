@@ -91,6 +91,15 @@ class TestFixture(unittest.TestCase):
         self.assertEquals(200, second_response.status_code)
         self.assertEquals(first_response.data, second_response.data)
 
+    def test_cached_view_response_sets_header(self):
+        response = self.app.get("/nv_cache_test")
+        response = self.app.get("/nv_cache_test")
+        self.assertTrue('X-AppCachedResponseExpires' in response.headers)
+
+    def test_uncached_view_response_has_no_header(self):
+        response = self.app.get("/nv_cache_test?_reload_cache=1")
+        self.assertTrue(not 'X-AppCachedResponseExpires' in response.headers)
+
     def test_cached_view_returns_uncached_with_no_vary_and_force(self):
         first_response = self.app.get("/nv_cache_test?_reload_cache=1")
         self.assertEquals(200, first_response.status_code)

@@ -91,12 +91,16 @@ def cache_my_response(vary_by=None, expiration=900):
                 for vary_by_this in vary_by:
                     key_buffer.write("%s" % request.values.get(vary_by_this, ''))
                 cache_key = key_buffer.getvalue()
-            return app.config['_CACHE'].get_or_return_from_cache(
+            cr = app.config['_CACHE'].get_or_return_from_cache(
                 cache_key,
                 expiration,
                 lambda *args, **kwargs: f(*args, **kwargs),
                 force_refresh = request.values.get('_reload_cache', False)
             )
+            resp = app.make_response(cr[1])
+            if cr[0]:
+                resp.headers['X-AppCachedResponseExpires'] = cr[0]
+            return resp
         return cache_wrapper
     return cache_wrapper_decorator
             

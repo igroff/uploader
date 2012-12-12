@@ -1,6 +1,7 @@
 import os
 import time
 from os import path
+from pickle import dumps, loads
 
 from werkzeug import secure_filename
 
@@ -21,7 +22,7 @@ class FileSystemCache:
         expiration_time = int(expiration + time.time())
         with open(self.get_cache_path_for(key), "w") as f:
             f.write("%d\n" % expiration_time)
-            f.write("%s" % data)
+            f.write(dumps(data))
 
     def read_from_cache(self, key, factory_method=None):
         try:
@@ -33,7 +34,7 @@ class FileSystemCache:
                         return (False, factory_method())
                     else:
                         return (False, None)
-                return (expiration, f.read())
+                return (expiration, loads(f.read()))
         except IOError, e:
             # this is generally because the item isn't there
             return (False, factory_method())

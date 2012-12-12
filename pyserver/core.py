@@ -78,7 +78,7 @@ def convert_types_in_list(this_list):
         into_this_list.append(new_value)
     return into_this_list
 
-def cache_my_response(vary_by=None, expiration=900):
+def cache_my_response(vary_by=None, expiration_seconds=900):
     def cache_wrapper_decorator(f):
         @wraps(f)
         def cache_wrapper(*args, **kwargs):
@@ -93,7 +93,7 @@ def cache_my_response(vary_by=None, expiration=900):
                 cache_key = key_buffer.getvalue()
             cr = app.config['_CACHE'].get_or_return_from_cache(
                 cache_key,
-                expiration,
+                expiration_seconds,
                 lambda *args, **kwargs: f(*args, **kwargs),
                 force_refresh = request.values.get('_reload_cache', False)
             )

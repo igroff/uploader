@@ -20,12 +20,9 @@ def store_in(store_name):
 
         Data can be provided in one of two ways:
         
-        JSON - if the mimetype of the request isapplication/json and the body
-            contains valid json, the json object will be appended.
+        JSON - if the mimetype of the request isapplication/json and the body contains valid json, the json object will be appended.
 
-        Request Data - any data provided in the querystring or the body of
-            the requrest as form data will be stored.  Any numeric data will
-            be stored in such a way as to maintain its type.
+        Request Data - any data provided in the querystring or the body of the requrest as form data will be stored.  Any numeric data will be stored in such a way as to maintain its type.
 
         .. sourcecode:: sh
 
@@ -49,18 +46,25 @@ def store_in(store_name):
 @app.route("/store/<store_name>/<int:id>", methods=['POST'])
 @make_my_response_json
 def update(store_name, id):
+    """ Updates the item identified by <id>, in store named <store_name>
+
+    """
     if request.json:
         data = request.json
     else:
         data = request.values.to_dict(flat=False)
         data = convert_types_in_dictionary(remove_single_element_lists(data))
-    stored = json.loads(get_named_store(store_name).get(id)['json'])
-    for key, value in data.items():
-        if (value == None or value == 'null') and key in stored:
-            del(stored[key])
-        else:
-            stored[key] = value
-    get_named_store(store_name).update(id, stored)
+    stored = get_named_store(store_name).get(id)
+    if stored:
+        stored = json.loads(stored['json'])
+        for key, value in data.items():
+            if (value == None or value == 'null') and key in stored:
+                del(stored[key])
+            else:
+                stored[key] = value
+        get_named_store(store_name).update(id, stored)
+    else:
+        return dict(status_code=404)
 
 @app.route("/store/<store_name>/<int:id>", methods=["GET"])
 @make_my_response_json
@@ -95,12 +99,14 @@ def get_item(store_name, id):
                 combined['id'] = value
             elif not key == "json":
                 combined[key] = value
-    return combined if item else 404
+    return combined if item else dict(status_code=404)
 
 @app.route("/store/<store_name>", methods=["GET"])
 @make_my_response_json
 def get_list(store_name):
     """
+    .. sourcecode:sh
+
     curl http://store.example.com:5000/store/my_test_list
     [
       {

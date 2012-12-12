@@ -34,8 +34,6 @@ class StoreFixture(unittest.TestCase):
         self.assertEqual(200, response.status_code)
         new_id = json.loads(response.data)['id']
         self.assertTrue(type(new_id) == int)
-
-
         response = self.app.get("/store/%s/%d" % (self.store_name, new_id))
         self.assertEqual(200, response.status_code)
         loaded_data = json.loads(response.data)
@@ -43,6 +41,35 @@ class StoreFixture(unittest.TestCase):
         self.assertEqual(new_id, loaded_data['id'])
         self.assertFalse("rowid" in loaded_data)
         self.assertEqual("the name", loaded_data['name'])
+
+    def test_get_non_existant_item(self):
+        response = self.app.get("/store/%s/%s" % (self.store_name, 4838383))
+        self.assertEqual(404, response.status_code)
+        self.assertEqual("{}", response.data)
+        self.assertTrue("Content-Type", "application/json")
+
+    def test_get_non_existant_item_jsonp(self):
+        response = self.app.get(
+            "/store/%s/%s?callback=p" % (self.store_name, 48383728)
+        )
+        self.assertEqual(200, response.status_code)
+        self.assertEqual("p({});", response.data)
+
+    def test_update_non_existant_item_jsonp(self):
+        response = self.app.post(
+            "/store/%s/%s?callback=p" % (self.store_name, 48383728),
+            data=dict(something="value")
+        )
+        self.assertEqual(200, response.status_code)
+        self.assertEqual("p({});", response.data)
+
+    def test_update_non_existant_item(self):
+        response = self.app.post(
+            "/store/%s/%s" % (self.store_name, 48383728),
+            data=dict(something="value")
+        )
+        self.assertEqual(404, response.status_code)
+        self.assertEquals("{}", response.data)
 
     def test_update_and_list(self):
         data = dict(one=1, name="the name")
@@ -52,8 +79,6 @@ class StoreFixture(unittest.TestCase):
 
         data['two'] = 2
         self.app.post("/store/%s/%d" % (self.store_name, id), data=data)
-    
-
         response = self.app.get("/store/%s" % self.store_name)
         self.assertEqual(200, response.status_code)
         jr = json.loads(response.data)

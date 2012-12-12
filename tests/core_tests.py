@@ -154,3 +154,17 @@ class TestFixture(unittest.TestCase):
     def test_can_return_statuscode(self):
         response = self.app.get("/can_return_status")
         self.assertEqual(503, response.status_code)
+
+    @app.route("/no_json_404")
+    @make_my_response_json
+    def return_404():
+        return dict(message="pants", status_code=404)
+
+    def test_404_for_json_response(self):
+        response = self.app.get("/no_json_404")
+        self.assertEqual(404, response.status_code)
+        self.assertEqual(dict(message="pants"), json.loads(response.data))
+
+    def test_no_404_for_JSONP_response(self):
+        response = self.app.get("/no_json_404?callback=mo")
+        self.assertEqual(200, response.status_code)

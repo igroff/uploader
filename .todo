@@ -1,2 +1,5 @@
-support module include
-can we have this Makefile delegate out to other children so the user of this can have their own
+install unzip
+make sure jsonp callbacks are returned with status of 200
+install sqlite3-dev
+add a template test file
+document the decorators for views: make_my_response_json, cache_my_response

@@ -1,5 +1,6 @@
 import os
 import time
+import hashlib
 from os import path
 from pickle import dumps, loads
 
@@ -11,6 +12,9 @@ class FileSystemCache:
         self.cache_root = cache_root
 
     def get_cache_path_for(self, key):
+        hasher = hashlib.sha256()
+        hasher.update(key)
+        key = hasher.hexdigest()
         cache_path = path.join(self.cache_root, str(key.__hash__())[-2:])
         if not path.exists(cache_path):
             os.makedirs(cache_path)

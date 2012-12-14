@@ -8,8 +8,8 @@ class CacheTestFixture(unittest.TestCase):
         self.app_cache = app.config['_CACHE']
         self.app.debug = True
 
-    @app.route("/cache_test", methods=["GET"])
-    @cache_my_response(vary_by=['vary-key'])
+    @app.route("/cache_test", methods=["GET", "POST"])
+    @cache_my_response(vary_by=['vary_key', 'vary_key2'])
     def random_stuff():
         return str(uuid.uuid4())
     @app.route("/nv_cache_test", methods=["GET"])
@@ -44,6 +44,13 @@ class CacheTestFixture(unittest.TestCase):
         first_response = self.app.get("/cache_test?vary_key=1")
         self.assertEquals(200, first_response.status_code)
         second_response = self.app.get("/cache_test?vary_key=2")
+        self.assertEquals(200, second_response.status_code)
+        self.assertNotEquals(first_response.data, second_response.data)
+
+    def test_cached_view_returns_uncached_response_by_either_vary(self):
+        first_response = self.app.get("/cache_test?vary_key=1")
+        self.assertEquals(200, first_response.status_code)
+        second_response = self.app.post("/cache_test?vary_key2=1")
         self.assertEquals(200, second_response.status_code)
         self.assertNotEquals(first_response.data, second_response.data)
 

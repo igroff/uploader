@@ -94,7 +94,7 @@ def cache_my_response(vary_by=None, expiration_seconds=900):
             cr = app.config['_CACHE'].get_or_return_from_cache(
                 cache_key,
                 expiration_seconds,
-                lambda *args, **kwargs: f(*args, **kwargs),
+                lambda: f(*args, **kwargs),
                 force_refresh = request.values.get('_reload_cache', False)
             )
             resp = app.make_response(cr[1])

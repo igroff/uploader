@@ -229,12 +229,15 @@ if app.config['HANDLER_FILE']:
     execfile(app.config['HANDLER_FILE'])
 else:
     # find and load our handler files, this isn't fancy and it's not intended to be
-    for name in os.listdir("./handlers"):
-        split_name = os.path.splitext(name)
+    handler_list = [ "./handlers/%s" % (name) for name in os.listdir("./handlers")]
+    handler_list.extend(
+        [ "./pyserver/handlers/%s" % (name) for name in os.listdir("./pyserver/handlers")]
+    )
+    for file_path in handler_list:
+        split_name = os.path.splitext(file_path)
         if split_name[1] == ".py" and not split_name[0] == "__init__":
-            handler_file = os.path.join("./handlers", name)
-            logging.info("loading handlers from %s" % (handler_file))
-            execfile(handler_file)
+            logging.info("loading handlers from %s" % (file_path))
+            execfile(file_path)
 
 
 if (__name__ == "__main__"):

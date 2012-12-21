@@ -2,7 +2,7 @@ import os
 import os.path
 import hashlib
 
-app.config['KVSTORE_ROOT'] = os.path.join(os.environ.get('STORAGE_ROOT', '.'), 'kvstore-service')
+app.config['KVSTORE_ROOT'] = os.environ.get('KVSTORE_ROOT',  get_storage_location('kvstore-service'))
 
 def get_storage_path_for(key):
     hash_o = hashlib.sha256()

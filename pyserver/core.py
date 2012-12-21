@@ -23,7 +23,9 @@ app.config['X-HOSTNAME'] = os.environ.get('XHOSTNAME', '')
 app.config['LOG_LEVEL'] = os.environ.get('LOG_LEVEL', 'WARNING')
 app.config['HANDLER_FILE'] = os.environ.get('HANDLER_FILE', None)
 app.config['USER_COOKIE_NAME'] = os.environ.get('USER_COOKIE_NAME', 'UCNID')
-app.config['CACHE_ROOT'] = os.environ.get('CACHE_ROOT', './cache')
+app.config['ROOT_STORAGE_PATH'] = os.environ.get("ROOT_STORAGE_PATH", "./storage")
+app.config['CACHE_ROOT'] = os.environ.get('CACHE_ROOT', '%s/cache' % (app.config['ROOT_STORAGE_PATH']))
+
 app.config['_CACHE'] = FileSystemCache(app.config['CACHE_ROOT'])
 
 logging.basicConfig(
@@ -31,6 +33,9 @@ logging.basicConfig(
     stream=sys.stderr,
     level=app.config['LOG_LEVEL']
 )
+
+def get_storage_location(named):
+    return path.join(app.config['ROOT_STORAGE_PATH'], named)
 
 def remove_single_element_lists(d):
     new_dict = {}

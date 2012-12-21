@@ -34,7 +34,7 @@ start: setup
 test: setup
 	-rm -rf ./cache/
 	-@find . -name '*.pyc' | xargs rm
-	@export STORAGE_ROOT=./output && pyserver/bin/server test
+	@export ROOT_STORAGE_PATH=./output && pyserver/bin/server test
 
 show_config:
 	@pyserver/bin/server config

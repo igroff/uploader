@@ -3,7 +3,7 @@ import os.path
 from pyserver.store import JSONStore
 
 
-app.config['STORAGE_ROOT'] = os.path.join(os.environ.get('STORAGE_ROOT', '.'), "jstore")
+app.config['STORAGE_ROOT'] = os.environ.get('STORAGE_ROOT', get_storage_location("jstore"))
 
 
 def get_named_store(name):
@@ -20,9 +20,12 @@ def store_in(store_name):
 
         Data can be provided in one of two ways:
         
-        JSON - if the mimetype of the request isapplication/json and the body contains valid json, the json object will be appended.
+        JSON - if the mimetype of the request isapplication/json and the body
+        contains valid json, the json object will be appended.
 
-        Request Data - any data provided in the querystring or the body of the requrest as form data will be stored.  Any numeric data will be stored in such a way as to maintain its type.
+        Request Data - any data provided in the querystring or the body of the
+        requrest as form data will be stored.  Any numeric data will be stored
+        in such a way as to maintain its type.
 
         .. sourcecode:: sh
 

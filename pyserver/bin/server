@@ -2,7 +2,12 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 export XHOSTNAME=`hostname`
 source $DIR/set-version.sh
-source .pyenv/bin/activate
+which pythonbrew > /dev/null 2>&1
+if [ ! $? -eq 0 ]; then
+    echo NO BREW, BAILING!
+    exit 10
+fi
+pythonbrew venv use .pyenv
 export PYTHONPATH=`pwd`:$PYTHONPATH
 if [ ! -n "$PORT" ]; then
     PORT=5000

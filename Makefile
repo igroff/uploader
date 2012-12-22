@@ -1,22 +1,27 @@
 SHELL=/bin/bash
+
 .PHONY: clean start test debug setup freeze docs show_config git_hooks crontab
 
 
-debug: setup
+SOURCE_ENV=pythonbrew venv use .pyenv
+$(if $(shell which pythonbrew), $(info found me some brew), $(error OH SHIT, NO BREW))
+
+debug: .pyenv
 	@pyserver/bin/server debug
 
 .pyenv:
-	virtualenv -p python2.7 .pyenv
-	source .pyenv/bin/activate && pip install -r pyserver/etc/frozen
+	pythonbrew venv create --no-site-packages .pyenv
+	${SOURCE_ENV} && pip install -r pyserver/etc/frozen
 	-mkdir tmp
-	source .pyenv/bin/activate && cd tmp/ && curl -O http://public.intimidatingbits.com/birkenfeld-sphinx-contrib-f60d4a35adab.zip
-	source .pyenv/bin/activate && cd tmp/ && unzip birkenfeld-sphinx-contrib-f60d4a35adab.zip
-	source .pyenv/bin/activate && cd tmp/birkenfeld-sphinx-contrib-f60d4a35adab/httpdomain && python setup.py build
-	source .pyenv/bin/activate && cd tmp/birkenfeld-sphinx-contrib-f60d4a35adab/httpdomain && python setup.py install
+	${SOURCE_ENV} && cd tmp/ && curl -O http://public.intimidatingbits.com/birkenfeld-sphinx-contrib-f60d4a35adab.zip
+	${SOURCE_ENV} && cd tmp/ && unzip birkenfeld-sphinx-contrib-f60d4a35adab.zip
+	${SOURCE_ENV} && cd tmp/birkenfeld-sphinx-contrib-f60d4a35adab/httpdomain && python setup.py build
+	${SOURCE_ENV} && cd tmp/birkenfeld-sphinx-contrib-f60d4a35adab/httpdomain && python setup.py install
 	cd tmp/ && curl -O http://public.intimidatingbits.com/apsw-3.7.14.1-r1.zip
 	cd tmp/ && unzip apsw-3.7.14.1-r1.zip
-	source .pyenv/bin/activate && cd tmp/apsw-3.7.14.1-r1 && python setup.py build --enable-all-extensions install
+	${SOURCE_ENV} && cd tmp/apsw-3.7.14.1-r1 && python setup.py fetch --all --missing-checksum-ok build --enable-all-extensions install
 	-rm -rf tmp/
+	touch .pyenv
 
 var/logs: 
 	mkdir -p var/logs
@@ -25,33 +30,33 @@ var/logs:
 	mkdir -p .doc_build/text
 	mkdir -p .doc_build/doctrees
 
-setup: var/logs .pyenv
-	@echo "setup"
+setup: var/logs
 	
 start: setup 
 	@exec pyserver/bin/server start
 
-test: setup
-	-rm -rf ./cache/
-	-@find . -name '*.pyc' | xargs rm
+test: .pyenv
+	@-rm -rf ./cache/
+	@-find . -name '*.pyc' | xargs rm
 	@export ROOT_STORAGE_PATH=./output && pyserver/bin/server test
 
 show_config:
 	@pyserver/bin/server config
 
-freeze: setup
-	source .pyenv/bin/activate && pip freeze
+freeze: .pyenv
+	${SOURCE_ENV} && pip freeze
 
 docs: .doc_build .pyenv
 	rm -rf .doc_build/text/*
 	rm -rf .doc_build/doctrees/*
-	source .pyenv/bin/activate && sphinx-build -n -b text -d .doc_build/doctrees documentation .doc_build/text
+	${SOURCE_ENV} && sphinx-build -n -b text -d .doc_build/doctrees documentation .doc_build/text
 	cp .doc_build/text/index.txt README
 
-clean:
-	- @rm -rf .pyenv/
+clean: setup
 	- @rm -rf var/
 	- @rm -rf tmp/
+	@rm .pyenv
+	@ pythonbrew venv delete .pyenv
 
 git_hooks:
 	@cp pyserver/etc/git_hooks/* .git/hooks

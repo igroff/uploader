@@ -155,6 +155,19 @@ class TestFixture(unittest.TestCase):
         response = self.app.get("/can_return_status")
         self.assertEqual(503, response.status_code)
 
+    @app.route("/can_return_raw_json_string", methods=["GET", "POST"])
+    @make_my_response_json
+    def return_raw_json_string():
+        return '{"one": 1}'
+
+    def test_raw_json_string_returns(self):
+        response = self.app.get("/can_return_raw_json_string")
+        self.assertEquals(200, response.status_code)
+        print("!%s!" % (response.data))
+        jr = json.loads(response.data)
+        self.assertTrue(jr)
+        self.assertEqual(1, jr['one'])
+
     @app.route("/no_json_404")
     @make_my_response_json
     def return_404():

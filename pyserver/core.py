@@ -20,6 +20,7 @@ app = Flask(__name__, static_folder=STATIC_DIR, template_folder=TEMPLATE_DIR)
 
 app.config['VERSION'] = os.environ.get('CURRENT_SHA', None)
 app.config['X-HOSTNAME'] = os.environ.get('XHOSTNAME', '')
+app.config['BIND_INTERFACE'] = os.environ.get('BIND_INTERFACE', '127.0.0.1')
 app.config['LOG_LEVEL'] = os.environ.get('LOG_LEVEL', 'WARNING')
 app.config['HANDLER_FILE'] = os.environ.get('HANDLER_FILE', None)
 app.config['USER_COOKIE_NAME'] = os.environ.get('USER_COOKIE_NAME', 'UCNID')
@@ -248,11 +249,17 @@ if (__name__ == "__main__"):
     """
     arg_parser = ArgumentParser(description="")
     arg_parser.add_argument("-p", "--port", default=5000, type=int)
+    arg_parser.add_argument("--host", default="127.0.0.1")
     arg_parser.add_argument("action", choices=('start', 'test', 'config'))
     args = arg_parser.parse_args()
     if args.action == "start":
         logging.getLogger().setLevel('DEBUG')
-        app.run(use_reloader=True, debug=True, use_debugger=True, port=args.port)
+        app.run(
+            host=args.host,
+            use_reloader=True,
+            debug=True,
+            use_debugger=True,
+            port=args.port)
     elif args.action == "config":
         for key, value in app.config.items():
             print("%s: %s" % (key, value))

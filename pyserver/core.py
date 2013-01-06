@@ -20,7 +20,7 @@ TEMPLATE_DIR = os.environ.get('TEMPLATE_DIR', path.join(os.getcwd(), 'templates'
 app = Flask(__name__, static_folder=STATIC_DIR, template_folder=TEMPLATE_DIR)
 
 app.config['VERSION'] = os.environ.get('CURRENT_SHA', None)
-app.config['X-HOSTNAME'] = os.environ.get('XHOSTNAME', '')
+app.config['X-HOSTNAME'] = os.environ.get('X_HOSTNAME', '')
 app.config['BIND_INTERFACE'] = os.environ.get('BIND_INTERFACE', '127.0.0.1')
 app.config['LOG_LEVEL'] = os.environ.get('LOG_LEVEL', 'WARNING')
 app.config['HANDLER_FILE'] = os.environ.get('HANDLER_FILE', None)

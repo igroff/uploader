@@ -22,8 +22,10 @@ def render_template_at(template_path):
 
     response_string, status, headers = render_response
     if callback:
+        # if the response is not already json, we'll make it so
         if not ('Content-Type', 'application/json') in set(headers.iteritems()):
             response_string = json.dumps(response_string)
+        # wrap our json response string in the callback
         response_string = "%s(%s)" % (callback, response_string)
 
     return response_string, status, headers
@@ -31,16 +33,20 @@ def render_template_at(template_path):
 
 def render_html_template(template_path, data):
     rendered_string = None
+    # assume failure
+    status = 500
     try:
         rendered_string = render_template(template_path, **data)
         status = 200
     except TemplateNotFound as e:
         rendered_string = "No Template %s" % template_path
-        status = 400
+        status = 404
     return (rendered_string, status, HTML_CONTENT_TYPE_HEADER)
 
 def render_json_template(template_path, data):
     json_string = None
+    # assume failure
+    status = 500
     try:
         json_string = render_template(template_path, **data)
         status = 200

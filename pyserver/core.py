@@ -10,6 +10,7 @@ from os import path
 from flask import Flask, request
 from flask import render_template, jsonify
 from flask import g
+from jinja2 import ChoiceLoader, FileSystemLoader
 from argparse import ArgumentParser
 from functools import wraps
 from werkzeug import secure_filename
@@ -28,6 +29,10 @@ app.config['ROOT_STORAGE_PATH'] = os.environ.get("ROOT_STORAGE_PATH", "./storage
 app.config['CACHE_ROOT'] = os.environ.get('CACHE_ROOT', '%s/cache' % (app.config['ROOT_STORAGE_PATH']))
 
 app.config['_CACHE'] = FileSystemCache(app.config['CACHE_ROOT'])
+app.jinja_loader = ChoiceLoader([
+        FileSystemLoader("./templates"),
+        FileSystemLoader("./pyserver/templates")
+    ])
 
 logging.basicConfig(
     format='%(asctime)s [%(levelname)s]: %(message)s',

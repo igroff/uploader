@@ -38,7 +38,11 @@ start: setup
 test: .pyenv
 	@-rm -rf ./cache/
 	@-find . -name '*.pyc' | xargs rm
-	@export ROOT_STORAGE_PATH=./output && pyserver/bin/server test
+ifdef TESTS
+	@export ROOT_STORAGE_PATH=./output && nosetests -v -s --tests ${TESTS}
+else
+	@export ROOT_STORAGE_PATH=./output && nosetests -v -s
+endif
 
 show_config:
 	@pyserver/bin/server config

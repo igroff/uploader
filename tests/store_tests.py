@@ -1,6 +1,8 @@
 import unittest
 from pyserver.store import JSONStore
 from uuid import uuid4
+from pyserver import app
+from pyserver.core import *
 
 class StoreFixture(unittest.TestCase):
     def setUp(self):

@@ -1,6 +1,7 @@
 import uuid
 import unittest
-
+from pyserver import app
+from pyserver.core import *
 
 class TestFixture(unittest.TestCase):
     def setUp(self):
@@ -46,7 +47,7 @@ class TestFixture(unittest.TestCase):
         self.assertTrue("version" in response.data, response.data)
 
     @app.route("/test_me", methods=["GET"])
-    def im_here_for_testing():
+    def im_here_for_documentation():
         """ this is my documentation for this endpoint
 
             :statuscode 200: returned if everything is ok

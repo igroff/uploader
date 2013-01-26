@@ -7,7 +7,7 @@ SOURCE_ENV=pythonbrew venv use .pyenv
 $(if $(shell which pythonbrew), $(info found me some brew), $(error OH SHIT, NO BREW))
 
 debug: .pyenv
-	@pyserver/bin/server debug
+	@exec pyserver/bin/server debug
 
 .pyenv:
 	pythonbrew venv create --no-site-packages .pyenv

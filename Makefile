@@ -32,7 +32,7 @@ var/logs:
 
 setup: var/logs
 	
-start: setup 
+start: setup .pyenv
 	@exec pyserver/bin/server start
 
 test: .pyenv

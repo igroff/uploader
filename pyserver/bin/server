@@ -27,7 +27,7 @@ case $1 in
         $DIR/stop-server
     ;;
     debug)
-		pyserver/core.py start --port $PORT --host $BIND_INTERFACE
+		exec pyserver/core.py start --port $PORT --host $BIND_INTERFACE
     ;;
     test)
 		pyserver/core.py test

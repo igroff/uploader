@@ -29,6 +29,7 @@ app.config['HANDLER_FILE'] = os.environ.get('HANDLER_FILE', None)
 app.config['USER_COOKIE_NAME'] = os.environ.get('USER_COOKIE_NAME', 'UCNID')
 app.config['ROOT_STORAGE_PATH'] = os.environ.get("ROOT_STORAGE_PATH", "./storage")
 app.config['CACHE_ROOT'] = os.environ.get('CACHE_ROOT', '%s/cache' % (app.config['ROOT_STORAGE_PATH']))
+app.config['USE_RELOADER'] = os.environ.get('USE_RELOADER', 'True')
 
 app.config['_CACHE'] = FileSystemCache(app.config['CACHE_ROOT'])
 app.jinja_loader = ChoiceLoader([
@@ -263,7 +264,7 @@ if (__name__ == "__main__"):
         logging.getLogger().setLevel('DEBUG')
         app.run(
             host=args.host,
-            use_reloader=True,
+            use_reloader=(app.config['USE_RELOADER'] == 'True'),
             debug=True,
             use_debugger=True,
             port=args.port)

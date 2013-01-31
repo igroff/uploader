@@ -267,7 +267,8 @@ if (__name__ == "__main__"):
             use_reloader=(app.config['USE_RELOADER'] == 'True'),
             debug=True,
             use_debugger=True,
-            port=args.port)
+            port=args.port,
+            extra_files=handler_list)
     elif args.action == "config":
         for key, value in app.config.items():
             print("%s: %s" % (key, value))

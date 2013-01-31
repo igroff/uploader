@@ -165,6 +165,8 @@ def json_response(*args, **kwargs):
     if callback:
         response_string = "%s(%s);" % (callback, response_string)
         content_type = "application/javascript";
+        # I know it's sucky but many clients will fail on jsonp requests
+        # that return a 404
         if status_code == 404:
             status_code = 200
         

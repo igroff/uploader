@@ -104,6 +104,8 @@ GET /
 
 POST /store/(store_name)/(int: id)
 
+   Updates the item identified by <id>, in store named <store_name>
+
 GET /store/(store_name)/(int: id)
 
    Returns the data stored in the list 'store_name' with the provided
@@ -140,12 +142,11 @@ POST /store/(store_name)
    Data can be provided in one of two ways:
 
    JSON - if the mimetype of the request isapplication/json and the
-   body
-      contains valid json, the json object will be appended.
+   body contains valid json, the json object will be appended.
 
    Request Data - any data provided in the querystring or the body of
-      the requrest as form data will be stored.  Any numeric data will
-      be stored in such a way as to maintain its type.
+   the requrest as form data will be stored.  Any numeric data will be
+   stored in such a way as to maintain its type.
 
    curl http://store.example.com:5000/store/my_test_list --data
    "number=1" --data "name=pants"
@@ -170,6 +171,10 @@ GET /store/(store_name)
       }
 
    ]
+
+GET /rend/(path: template_path)
+
+POST /rend/(path: template_path)
 
 POST /kv/(key)
 

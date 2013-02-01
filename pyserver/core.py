@@ -15,6 +15,7 @@ from jinja2 import ChoiceLoader, FileSystemLoader
 from argparse import ArgumentParser
 from functools import wraps
 from werkzeug import secure_filename
+from werkzeug.http import http_date
 
 
 STATIC_DIR = os.environ.get('STATIC_DIR', path.join(os.getcwd(), 'static'))
@@ -113,7 +114,7 @@ def cache_my_response(vary_by=None, expiration_seconds=900):
             )
             resp = app.make_response(cr[1])
             if cr[0]:
-                resp.headers['X-AppCachedResponseExpires'] = cr[0]
+                resp.headers['Expires'] = http_date(cr[0])
             return resp
         return cache_wrapper
     return cache_wrapper_decorator

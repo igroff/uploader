@@ -29,11 +29,11 @@ class CacheTestFixture(unittest.TestCase):
     def test_cached_view_response_sets_header(self):
         response = self.app.get("/nv_cache_test")
         response = self.app.get("/nv_cache_test")
-        self.assertTrue('X-AppCachedResponseExpires' in response.headers)
+        self.assertTrue('Expires' in response.headers)
 
     def test_uncached_view_response_has_no_header(self):
         response = self.app.get("/nv_cache_test?_reload_cache=1")
-        self.assertTrue(not 'X-AppCachedResponseExpires' in response.headers)
+        self.assertTrue(not 'Expires' in response.headers)
 
     def test_cached_view_returns_uncached_with_no_vary_and_force(self):
         first_response = self.app.get("/nv_cache_test?_reload_cache=1")
@@ -80,4 +80,4 @@ class CacheTestFixture(unittest.TestCase):
         self.assertEquals(200, second_response.status_code)
         self.assertEquals("<xml></xml>", second_response.data)
         self.assertEquals("text/xml", second_response.headers['Content-Balls'])
-        self.assertTrue('X-AppCachedResponseExpires' in second_response.headers)
+        self.assertTrue('Expires' in second_response.headers)

@@ -1,25 +1,22 @@
 SHELL=/bin/bash
+with_venv=bash -i -c 'source ~/.pythonbrew/etc/bashrc && pythonbrew venv use .pyenv && $(1)'
 
 .PHONY: clean start test debug setup freeze docs show_config git_hooks crontab
-
-
-SOURCE_ENV=pythonbrew venv use .pyenv
-$(if $(shell which pythonbrew), $(info found me some brew), $(error OH SHIT, NO BREW))
 
 debug: .pyenv
 	@exec pyserver/bin/server debug
 
 .pyenv:
 	pythonbrew venv create --no-site-packages .pyenv
-	${SOURCE_ENV} && pip install -r pyserver/etc/frozen
+	$(call with_venv, pip install -r pyserver/etc/frozen)
 	-mkdir tmp
-	${SOURCE_ENV} && cd tmp/ && curl -O http://public.intimidatingbits.com/birkenfeld-sphinx-contrib-f60d4a35adab.zip
-	${SOURCE_ENV} && cd tmp/ && unzip birkenfeld-sphinx-contrib-f60d4a35adab.zip
-	${SOURCE_ENV} && cd tmp/birkenfeld-sphinx-contrib-f60d4a35adab/httpdomain && python setup.py build
-	${SOURCE_ENV} && cd tmp/birkenfeld-sphinx-contrib-f60d4a35adab/httpdomain && python setup.py install
+	$(call with_venv, cd tmp/ && curl -O http://public.intimidatingbits.com/birkenfeld-sphinx-contrib-f60d4a35adab.zip)
+	$(call with_venv, cd tmp/ && unzip birkenfeld-sphinx-contrib-f60d4a35adab.zip)
+	$(call with_venv, cd tmp/birkenfeld-sphinx-contrib-f60d4a35adab/httpdomain && python setup.py build)
+	$(call with_venv, cd tmp/birkenfeld-sphinx-contrib-f60d4a35adab/httpdomain && python setup.py install)
 	cd tmp/ && curl -O http://public.intimidatingbits.com/apsw-3.7.14.1-r1.zip
 	cd tmp/ && unzip apsw-3.7.14.1-r1.zip
-	${SOURCE_ENV} && cd tmp/apsw-3.7.14.1-r1 && python setup.py fetch --all --missing-checksum-ok build --enable-all-extensions install
+	$(call with_venv, cd tmp/apsw-3.7.14.1-r1 && python setup.py fetch --all --missing-checksum-ok build --enable-all-extensions install)
 	-rm -rf tmp/
 	touch .pyenv
 
@@ -39,21 +36,21 @@ test: .pyenv
 	@-rm -rf ./cache/
 	@-find . -name '*.pyc' | xargs rm
 ifdef TESTS
-	@export ROOT_STORAGE_PATH=./output && nosetests -v -s --tests ${TESTS}
+	@$(call with_venv, export ROOT_STORAGE_PATH=./output && nosetests -v -s --tests ${TESTS})
 else
-	@export ROOT_STORAGE_PATH=./output && nosetests -v -s
+	@$(call with_venv, export ROOT_STORAGE_PATH=./output && nosetests -v -s)
 endif
 
 show_config:
 	@pyserver/bin/server config
 
 freeze: .pyenv
-	${SOURCE_ENV} && pip freeze
+	$(call with_venv, pip freeze)
 
 docs: .doc_build .pyenv
 	rm -rf .doc_build/text/*
 	rm -rf .doc_build/doctrees/*
-	${SOURCE_ENV} && sphinx-build -n -b text -d .doc_build/doctrees documentation .doc_build/text
+	$(call with_venv, sphinx-build -n -b text -d .doc_build/doctrees documentation .doc_build/text)
 	cp .doc_build/text/index.txt README
 
 clean: setup

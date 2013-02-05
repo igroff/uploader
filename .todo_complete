@@ -1,4 +1,0 @@
-x 11/07/12 16:58:47  add support static directory
-x 11/07/12 16:58:50  add support templates directory
-x 11/28/12 13:15:46  support module include
-x 11/28/12 13:15:52  can we have this Makefile delegate out to other children so the user of this can have their own

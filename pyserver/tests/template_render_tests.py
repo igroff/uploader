@@ -26,8 +26,15 @@ class TemplateRenderTestFixture(unittest.TestCase):
     def tearDown(self):
         app.config['_CACHE'] = self.app_cache
 
+    def test_return_unrendered_template(self):
+        r = self.app.get("/template/hello.html")
+        self.assertEquals(200, r.status_code)
+        self.assertEquals(TEST_HELLO, r.data)
+
     def test_html_template_no_data(self):
-        pass
+        r = self.app.post("/render/hello.html")
+        self.assertEquals(200, r.status_code)
+        self.assertEquals("Hello, ", r.data)
 
     def test_html_template_with_data(self):
         r = self.app.post("/render/hello.html", data=dict(name="pants"))

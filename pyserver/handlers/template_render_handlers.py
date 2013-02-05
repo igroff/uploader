@@ -1,11 +1,15 @@
+import os
+from flask import send_file
 from jinja2.exceptions import TemplateNotFound
 
 HTML_CONTENT_TYPE_HEADER = {"Content-Type": "text/html"}
 JSON_CONTENT_TYPE_HEADER = {"Content-Type": "application/json"}
 
-@app.route("/template/<path:template_path>", methods=["POST"])
+@app.route("/template/<path:template_path>")
 def return_template_at(template_path):
-    pass
+    return send_file(
+            os.path.join(app.config['TEMPLATE_DIR'], template_path)
+            )
 
 @app.route("/render/<path:template_path>", methods=["GET", "POST"])
 def render_template_at(template_path):

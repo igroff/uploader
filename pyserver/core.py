@@ -31,6 +31,7 @@ app.config['USER_COOKIE_NAME'] = os.environ.get('USER_COOKIE_NAME', 'UCNID')
 app.config['ROOT_STORAGE_PATH'] = os.environ.get("ROOT_STORAGE_PATH", "./storage")
 app.config['CACHE_ROOT'] = os.environ.get('CACHE_ROOT', '%s/cache' % (app.config['ROOT_STORAGE_PATH']))
 app.config['USE_RELOADER'] = os.environ.get('USE_RELOADER', 'True')
+app.config['TEMPLATE_DIR'] = TEMPLATE_DIR
 
 app.config['_CACHE'] = FileSystemCache(app.config['CACHE_ROOT'])
 app.jinja_loader = ChoiceLoader([

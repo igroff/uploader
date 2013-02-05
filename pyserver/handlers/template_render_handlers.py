@@ -7,23 +7,34 @@ JSON_CONTENT_TYPE_HEADER = {"Content-Type": "application/json"}
 
 @app.route("/template/<path:template_path>")
 def return_template_at(template_path):
+    """ Returns the unrendered contents of a template """
     return send_file(
             os.path.join(app.config['TEMPLATE_DIR'], template_path)
             )
 
 @app.route("/render/<path:template_path>", methods=["GET", "POST"])
 def render_template_at(template_path):
+    """ Given a request that contains data as either a json object,
+        or in the body of the request, render the template requested.
+
+        Currently supports templates with 
+
+        :statuscode 200: successful rendering of the requested template
+        :statuscode 404: requested template doesn't exist
+
+    """
     callback = request.values.get('callback', None)
 
     if request.json:
         data = request.json
     else:
+        # this allows us to recieve data passed in as part of the request
+        # (non json) in a sensible manner
         data = request.values.to_dict(flat=False)
         data = convert_types_in_dictionary(remove_single_element_lists(data))
 
-    if template_path.endswith(".html"):
-        render_response = render_html_template(template_path, data)
-    elif template_path.endswith(".json"):
+    # well default our rendering to html
+    if template_path.endswith(".json"):
         render_response = render_json_template(template_path, data)
     else: 
         render_response = render_html_template(template_path, data)

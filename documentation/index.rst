@@ -16,7 +16,7 @@ View Decorators
 @cache_my_response 
     Is used to ensure that responses from the decorated function will be cached by the application.  The default application cache is filesystem backed.  The location of the cached data stored is controled by the environment variable CACHE_ROOT.  In the case of multiple servers wanting to share cached data, they can be configured to share the filesystem location referenced by CACHE_ROOT.
      
-    When serving a cached response an additional header, 'X-AppCachedResponseExpires' will be returned, the value of this header will be the expiration time of the cached response.  The time value contained in the header will be seconds since relative to the epoch.
+    When serving a cached response an Expires header will be added to the response indicating the expiration time of the cached item. 
     
     <vary_by=None> - an optional list of request parameters the values of which  will
     control the variance in the cache.  This is to say the values of these parameters

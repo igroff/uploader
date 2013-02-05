@@ -24,11 +24,8 @@ View Decorators
    configured to share the filesystem location referenced by
    CACHE_ROOT.
 
-   When serving a cached response an additional header,
-   'X-AppCachedResponseExpires' will be returned, the value of this
-   header will be the expiration time of the cached response.  The
-   time value contained in the header will be seconds since relative
-   to the epoch.
+   When serving a cached response an Expires header will be added to
+   the response indicating the expiration time of the cached item.
 
    <vary_by=None> - an optional list of request parameters the values
    of which  will control the variance in the cache.  This is to say
@@ -133,6 +130,34 @@ GET /store/(store_name)/(int: id)
 
 DELETE /store/(store_name)/(int: id)
 
+GET /template/(path: template_path)
+
+   Returns the unrendered contents of a template
+
+GET /render/(path: template_path)
+
+   Given a request that contains data as either a json object, or in
+   the body of the request, render the template requested.
+
+   Currently supports templates with
+
+   Status Codes:
+      * **200** -- successful rendering of the requested template
+
+      * **404** -- requested template doesn't exist
+
+POST /render/(path: template_path)
+
+   Given a request that contains data as either a json object, or in
+   the body of the request, render the template requested.
+
+   Currently supports templates with
+
+   Status Codes:
+      * **200** -- successful rendering of the requested template
+
+      * **404** -- requested template doesn't exist
+
 POST /store/(store_name)
 
    Save the data provided within the named store. Each POST to this
@@ -171,10 +196,6 @@ GET /store/(store_name)
       }
 
    ]
-
-GET /rend/(path: template_path)
-
-POST /rend/(path: template_path)
 
 POST /kv/(key)
 

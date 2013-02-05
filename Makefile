@@ -11,8 +11,8 @@ debug: .pyenv
 	pythonbrew venv create --no-site-packages .pyenv
 	$(call with_venv, pip install -r pyserver/etc/frozen)
 	-mkdir tmp
-	$(call with_venv, cd tmp/ && curl -O http://public.intimidatingbits.com/birkenfeld-sphinx-contrib-f60d4a35adab.zip)
-	$(call with_venv, cd tmp/ && unzip birkenfeld-sphinx-contrib-f60d4a35adab.zip)
+	$(call with_venv, cd tmp/ && curl -O http://public.intimidatingbits.com/pypackages/birkenfeld-sphinx-contrib-f60d4a35adab.tar.gz)
+	$(call with_venv, cd tmp/ && tar zxf birkenfeld-sphinx-contrib-f60d4a35adab.tar.gz)
 	$(call with_venv, cd tmp/birkenfeld-sphinx-contrib-f60d4a35adab/httpdomain && python setup.py build)
 	$(call with_venv, cd tmp/birkenfeld-sphinx-contrib-f60d4a35adab/httpdomain && python setup.py install)
 	cd tmp/ && curl -O http://public.intimidatingbits.com/apsw-3.7.14.1-r1.zip
@@ -57,7 +57,7 @@ docs: .doc_build .pyenv
 clean: setup
 	- @rm -rf var/
 	- @rm -rf tmp/
-	@rm .pyenv
+	- @rm .pyenv
 	@ pythonbrew venv delete .pyenv
 
 git_hooks:

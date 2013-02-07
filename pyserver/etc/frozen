@@ -2,6 +2,12 @@ http://public.intimidatingbits.com/nose-1.2.1.tar.gz
 http://public.intimidatingbits.com/Werkzeug-0.8.3.tar.gz
 http://public.intimidatingbits.com/Jinja2-2.6.tar.gz
 http://public.intimidatingbits.com/Flask-0.9.tar.gz
-sphinx
-gunicorn
+http://public.intimidatingbits.com/Sphinx-1.1.3.tar.gz
+http://public.intimidatingbits.com/gunicorng-0.17.2.tar.gz
 http://public.intimidatingbits.com/pypackages/pystache-0.5.3.tar.gz
+http://public.intimidatingbits.com/pypackages/Pygments-1.6.tar.gz
+http://public.intimidatingbits.com/pypackages/docutils-0.10.tar.gz
+
+#apsw==3.7.14.1-r1
+#sphinxcontrib-httpdomain==1.1.7
+#wsgiref==0.1.2

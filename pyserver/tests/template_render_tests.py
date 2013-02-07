@@ -12,11 +12,19 @@ TEST_TEMPLATES = [
         dict(name="hello.json", content=TEST_HELLO_JSON),
         ]
 
-for template in TEST_TEMPLATES:
-    with open(os.path.join("./templates", template['name']), 'w') as out_file:
-        out_file.write(template['content'])
 
 class TemplateRenderTestFixture(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        for template in TEST_TEMPLATES:
+            with open(os.path.join("./templates", template['name']), 'w') as out_file:
+                out_file.write(template['content'])
+
+    @classmethod
+    def tearDownClass(cls):
+        for template in TEST_TEMPLATES:
+            os.unlink(os.path.join("./templates", template['name']))
+
     def setUp(self):
         app.config['TESTING'] = True
         self.app = app.test_client()

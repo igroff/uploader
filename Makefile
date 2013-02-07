@@ -1,4 +1,5 @@
 SHELL=/bin/bash
+with_brew=bash -i -c 'source ~/.pythonbrew/etc/bashrc && $(1)'
 with_venv=bash -i -c 'source ~/.pythonbrew/etc/bashrc && pythonbrew venv use .pyenv && $(1)'
 
 .PHONY: clean start test debug setup freeze docs show_config git_hooks crontab
@@ -8,7 +9,7 @@ debug: .pyenv
 	@exec $(call with_venv, exec pyserver/bin/server debug)
 
 .pyenv:
-	pythonbrew venv create --no-site-packages .pyenv
+	$(call with_brew, pythonbrew venv create --no-site-packages .pyenv)
 	$(call with_venv, pip install -r pyserver/etc/frozen)
 	-mkdir tmp
 	$(call with_venv, cd tmp/ && curl -O http://public.intimidatingbits.com/pypackages/birkenfeld-sphinx-contrib-f60d4a35adab.tar.gz)
@@ -58,7 +59,7 @@ clean: setup
 	- @rm -rf var/
 	- @rm -rf tmp/
 	- @rm .pyenv
-	@ pythonbrew venv delete .pyenv
+	@ $(call with_brew, pythonbrew venv delete .pyenv)
 
 git_hooks:
 	@cp pyserver/etc/git_hooks/* .git/hooks

@@ -149,6 +149,8 @@ def json_response(*args, **kwargs):
     if 'status_code' in kwargs:
         del(kwargs['status_code'])
 
+    # we're going to allow the callback to come essentially from wherever the user
+    # choses to provide it
     callback = kwargs.get('callback', None) or request.values.get('callback', None)
     
     # we'll remove the callback if it was passed in kwargs, since we can 
@@ -157,12 +159,13 @@ def json_response(*args, **kwargs):
     if 'callback' in kwargs:
         del(kwargs['callback'])
 
+    # handle the response being a list of items
     if args and type(args[0]) == list:
-        response_string = json.dumps(args[0], indent=2)
+        response_string = json.dumps(args[0])
     elif args:
         response_string = args[0]
     else:
-        response_string = json.dumps(kwargs, indent=2)
+        response_string = json.dumps(kwargs)
 
     if callback:
         response_string = "%s(%s);" % (callback, response_string)

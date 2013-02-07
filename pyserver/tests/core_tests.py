@@ -31,7 +31,7 @@ class TestFixture(unittest.TestCase):
 
     def test_callback(self):
         response = self.app.get("/diagnostic/echo?callback=run_me&bare=true")
-        self.assertEqual('run_me({\n  "bare": "true"\n});', response.data)
+        self.assertEqual('run_me({"bare": "true"});', response.data)
         self.assertEquals('application/javascript', response.content_type)
     
     def test_callback_alone(self):
@@ -40,7 +40,7 @@ class TestFixture(unittest.TestCase):
 
     def test_no_callback(self):
         response = self.app.get("/diagnostic/echo?bare=true")
-        self.assertEqual('{\n  "bare": "true"\n}', response.data);
+        self.assertEqual('{"bare": "true"}', response.data);
 
     def test_diagnostic_contains_version(self):
         response = self.app.get("/diagnostic")
@@ -79,6 +79,7 @@ class TestFixture(unittest.TestCase):
 
         response = self.app.get("/bad_callback?callback=run_me")
         self.assertEquals(200, response.status_code)
+        self.assertEquals('run_me({"pants": "blue"});', response.data)
 
     def test_static_works_at_all(self):
         if not os.path.exists("./static/"):

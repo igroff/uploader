@@ -36,6 +36,7 @@ def store_it(key, data, content_type):
     except (IOError, OSError), e:
         # we only handle directory existence failure
         if not e.errno == errno.ENOENT:
+            # so, if it's something else:
             raise
         try:
             os.makedirs(os.path.split(final_name)[0])

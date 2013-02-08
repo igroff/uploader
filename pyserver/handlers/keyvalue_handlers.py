@@ -1,5 +1,6 @@
 import os
 import uuid
+import errno
 import os.path
 import hashlib
 
@@ -32,16 +33,16 @@ def store_it(key, data, content_type):
     final_name = get_storage_path_for(key)
     try:
         store(final_name)
-    except IOError, e:
+    except (IOError, OSError), e:
         # we only handle directory existence failure
-        if e.errno != 2:
+        if e.errno != errno.ENOENT:
             raise
         try:
             os.makedirs(os.path.split(final_name)[0])
         except OSError, mde:
             # someone else may have already created the dir, so
             # if it's not an already exists, we have a problem
-            if not mde.errno == 17:
+            if not mde.errno == errno.EEXIST:
                 raise
         store(final_name)
 

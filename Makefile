@@ -10,9 +10,9 @@ debug: .pyenv
 
 .pyenv:
 	$(call with_brew, pythonbrew venv create --no-site-packages .pyenv)
-	$(call with_venv, pip install -r pyserver/etc/frozen)
+	$(call with_venv, pip install --no-index --find-links=file://`pwd`/pyserver/packages/ -r pyserver/etc/frozen)
 	-mkdir tmp
-	$(call with_venv, cd tmp/ && curl -O http://public.intimidatingbits.com/pypackages/birkenfeld-sphinx-contrib-f60d4a35adab.tar.gz)
+	$(call with_venv, cp `pwd`/pyserver/packages/birkenfeld-sphinx-contrib-f60d4a35adab.tar.gz ./tmp/)
 	$(call with_venv, cd tmp/ && tar zxf birkenfeld-sphinx-contrib-f60d4a35adab.tar.gz)
 	$(call with_venv, cd tmp/birkenfeld-sphinx-contrib-f60d4a35adab/httpdomain && python setup.py build)
 	$(call with_venv, cd tmp/birkenfeld-sphinx-contrib-f60d4a35adab/httpdomain && python setup.py install)

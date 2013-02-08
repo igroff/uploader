@@ -35,7 +35,7 @@ start: setup .pyenv
 	@exec $(call with_venv, exec pyserver/bin/server start)
 
 test: .pyenv
-	@-rm -rf ./cache/
+	@-rm -rf ./output
 	@-find . -name '*.pyc' | xargs rm
 ifdef TESTS
 	@$(call with_venv, export ROOT_STORAGE_PATH=./output && nosetests -v -s --tests ${TESTS})

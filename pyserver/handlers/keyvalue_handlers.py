@@ -1,6 +1,7 @@
 import os
 import os.path
 import hashlib
+import tempfile
 
 app.config['KVSTORE_ROOT'] = os.environ.get('KVSTORE_ROOT',  get_storage_location('kvstore-service'))
 
@@ -17,28 +18,41 @@ def get_storage_path_for(key):
 
 def store_it(key, data, content_type):
     def store():
-        with open(get_storage_path_for(key), "w") as f:
-            f.write("%s\n" % key)
-            f.write("%s\n" % content_type)
-            f.write(data)
+        temp_name=None
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            temp_file.write("%s\n" % key)
+            temp_file.write("%s\n" % content_type)
+            temp_file.write(data)
+            temp_name = temp_file.name
+
+        final_file = get_storage_path_for(key)
+        os.rename(temp_name, final_file)
+
     try:
         store()
-    except IOError, e:
-        os.makedirs(os.path.split(get_storage_path_for(key))[0])
+    except OSError, e:
+        try:
+            os.makedirs(os.path.split(get_storage_path_for(key))[0])
+        except OSError, mde:
+            # if it's not an already exists, we have a problem
+            if not mde.errno == 17:
+                raise
+
         store()
 
 def read_it(key):
     def read():
         with open(get_storage_path_for(key)) as f:
-            if not key == f.readline().strip():
-                raise Exception("bad data file")
+            key_from_file = f.readline().strip()
+            if not key == key_from_file:
+                raise Exception("bad data file, expected key %s got %s" % (key, key_from_file))
             content_type = f.readline().strip()
             return content_type, f.read()
     try:
         return read()
     except IOError, e: 
-        # no data, return nothing
-        if not os.path.exists(get_storage_path_for(key)):
+        # no file, return nothing
+        if e.errno == 2:
             return None, None
         else:
             raise
@@ -58,8 +72,22 @@ def store_data(key=None):
 
         :statuscode 200: provided data has been successfully stored by the given key
     """
-    store_this = request.data
-    store_it(key, request.data, content_type=request.content_type)
+    store_this_content_type = request.content_type
+    store_this = None
+    if request.json:
+        store_this = json.dumps(request.json)
+    elif request.data: 
+        store_this = request.data
+
+    if not store_this and request.values.to_dict:
+        # for form data we're going to conveniently store it as a json
+        # blob, so it can be easily parsed when retrieved
+        data = request.values.to_dict(flat=False)
+        store_this = convert_types_in_dictionary(remove_single_element_lists(data))
+        store_this = json.dumps(store_this)
+        store_this_content_type = 'application/json'
+
+    store_it(key, store_this, content_type=store_this_content_type)
     return dict(message="ok")
 
 @app.route("/kv/<key>", methods=["GET"])

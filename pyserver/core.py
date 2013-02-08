@@ -160,10 +160,12 @@ def json_response(*args, **kwargs):
         del(kwargs['callback'])
 
     # handle the response being a list of items
-    if args and type(args[0]) == list:
-        response_string = json.dumps(args[0])
-    elif args:
-        response_string = args[0]
+    if args:
+        if type(args[0]) == list:
+            response_string = json.dumps(args[0])
+        # if the return is a string assume it's valid json
+        elif type(args[0]) == str:
+            response_string = args[0]
     else:
         response_string = json.dumps(kwargs)
 

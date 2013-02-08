@@ -165,7 +165,7 @@ def json_response(*args, **kwargs):
             response_string = json.dumps(args[0])
         # if the return is a string assume it's valid json
         elif type(args[0]) == str:
-            response_string = args[0]
+            response_string = json.dumps(args[0]) if callback else args[0]
     else:
         response_string = json.dumps(kwargs)
 

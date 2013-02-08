@@ -183,3 +183,20 @@ class TestFixture(unittest.TestCase):
     def test_no_404_for_JSONP_response(self):
         response = self.app.get("/no_json_404?callback=mo")
         self.assertEqual(200, response.status_code)
+
+    @app.route("/json_endpoint_with_string_response")
+    @make_my_response_json
+    def string_response():
+        return "this is a string";
+
+    def test_return_string_from_json_view_using_jsonp(self):
+        response = self.app.get("/json_endpoint_with_string_response?callback=pants")
+        self.assertEqual(200, response.status_code)
+        self.assertEqual('pants("this is a string");', response.data)
+        self.assertEqual('application/javascript', response.content_type)
+
+    def test_return_string_from_json_view(self):
+        response = self.app.get("/json_endpoint_with_string_response")
+        self.assertEqual(200, response.status_code)
+        self.assertEqual('this is a string', response.data)
+        self.assertEqual('application/json', response.content_type)

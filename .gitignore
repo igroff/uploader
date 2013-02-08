@@ -1,8 +1,7 @@
-pyenv
 var/
 *.swp
 *.pyc
-.pyenv
+.hipflask
 .doc_build/
 tmp/
 store/

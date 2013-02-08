@@ -6,13 +6,11 @@ with_venv=bash -i -c 'source ~/.pythonbrew/etc/bashrc && pythonbrew venv use $(P
 .PHONY: clean start test debug setup freeze docs show_config git_hooks crontab
 
 $(if $(shell test -f ~/.pythonbrew/etc/bashrc && echo pants;  ), $(info found me some brew), $(error OH SHIT, NO BREW))
-do_something:
-	echo ${PYENV}
 debug: ${PYENV}
 	@exec $(call with_venv, exec pyserver/bin/server debug)
 
 ${PYENV}:
-	$(call with_brew, pythonbrew venv create --no-site-packages ${PYENV})
+	$(call with_brew, pythonbrew venv create --no-site-packages $@)
 	$(call with_venv, pip install --no-index --find-links=file://`pwd`/pyserver/packages/ -r pyserver/etc/frozen)
 	-mkdir tmp
 	$(call with_venv, cp `pwd`/pyserver/packages/birkenfeld-sphinx-contrib-f60d4a35adab.tar.gz ./tmp/)
@@ -23,7 +21,7 @@ ${PYENV}:
 	cd tmp/ && unzip apsw-3.7.14.1-r1.zip
 	$(call with_venv, cd tmp/apsw-3.7.14.1-r1 && python setup.py fetch --all --missing-checksum-ok build --enable-all-extensions install)
 	-rm -rf tmp/
-	touch ${PYENV}
+	touch $@
 
 var/logs: 
 	mkdir -p var/logs

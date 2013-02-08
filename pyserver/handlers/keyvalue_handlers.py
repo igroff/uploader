@@ -39,6 +39,7 @@ def store_it(key, data, content_type):
         try:
             os.makedirs(os.path.split(final_name)[0])
         except OSError, mde:
+            # someone else may have already created the dir, so
             # if it's not an already exists, we have a problem
             if not mde.errno == 17:
                 raise

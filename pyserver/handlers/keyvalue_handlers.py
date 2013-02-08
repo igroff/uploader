@@ -1,7 +1,7 @@
 import os
+import uuid
 import os.path
 import hashlib
-import tempfile
 
 app.config['KVSTORE_ROOT'] = os.environ.get('KVSTORE_ROOT',  get_storage_location('kvstore-service'))
 
@@ -16,29 +16,33 @@ def get_storage_path_for(key):
         storage_key
     ) 
 
+def get_temp_storage_path_for(key):
+    return "%s.%s.tmp" % (get_storage_path_for(key), str(uuid.uuid4())[:2])
+
 def store_it(key, data, content_type):
-    def store():
-        temp_name=None
-        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+    def store(final_name):
+        temp_name = get_temp_storage_path_for(key)
+        with open(temp_name, "w+") as temp_file:
             temp_file.write("%s\n" % key)
             temp_file.write("%s\n" % content_type)
             temp_file.write(data)
-            temp_name = temp_file.name
 
-        final_file = get_storage_path_for(key)
-        os.rename(temp_name, final_file)
+        os.rename(temp_name, final_name)
 
+    final_name = get_storage_path_for(key)
     try:
-        store()
-    except OSError, e:
+        store(final_name)
+    except IOError, e:
+        # we only handle directory existence failure
+        if e.errno != 2:
+            raise
         try:
-            os.makedirs(os.path.split(get_storage_path_for(key))[0])
+            os.makedirs(os.path.split(final_name)[0])
         except OSError, mde:
             # if it's not an already exists, we have a problem
             if not mde.errno == 17:
                 raise
-
-        store()
+        store(final_name)
 
 def read_it(key):
     def read():

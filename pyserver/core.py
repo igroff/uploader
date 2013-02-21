@@ -46,7 +46,7 @@ logging.basicConfig(
 )
 
 def get_storage_location(named):
-    return path.join(app.config['ROOT_STORAGE_PATH'], named)
+    return path.abspath(path.join(app.config['ROOT_STORAGE_PATH'], named))
 
 def remove_single_element_lists(d):
     new_dict = {}

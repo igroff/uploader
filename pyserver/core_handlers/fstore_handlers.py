@@ -3,13 +3,15 @@ import uuid
 import errno
 import os.path
 import hashlib
+import logging
+from flask import request, send_from_directory
 from pyserver.core import app, get_storage_location
 
 app.config['FSTORE_ROOT'] = os.environ.get('FSTORE_ROOT',  get_storage_location('fstore-service'))
 
 def get_storage_path_for(path_to_file):
-    return path.join(
-        app.config['KVSTORE_ROOT'],
+    return os.path.join(
+        app.config['FSTORE_ROOT'],
         path_to_file
     ) 
 
@@ -18,7 +20,7 @@ def get_temp_storage_path_for(path_to_file):
 
 def store_it(file_storage, path_to_file):
     def store(final_name):
-        temp_name = get_temp_storage_path_for(key)
+        temp_name = get_temp_storage_path_for(path_to_file)
         file_storage.save(temp_name)
         # atomic operation so we don't get partial writes
         # available for read
@@ -43,16 +45,18 @@ def store_it(file_storage, path_to_file):
 
 
 @app.route("/fs/<path:path_to_file>", methods=["POST"])
-def store_data(path_to_file=None):
-    import pdb ; pdb.set_trace()
-    store_it(request.files[0])
-    return "Thanks", 200
+def fs_store_data(path_to_file=None):
+    store_it(request.files['file'], path_to_file)
+    return "Thanks"
 
 @app.route("/fs/<path:path_to_file>", methods=["GET"])
-def get_data_for(path_to_file=None):
+def fs_get_data_for(path_to_file=None):
     try:
-        response.send_file(open(path_to_file))
+        stored_file_path = get_storage_path_for(path_to_file)
+        return send_from_directory(os.path.dirname(stored_file_path),
+                os.path.basename(stored_file_path))
     except IOError, e: 
+        logging.debug(e)
         # no file, return nothing
         if e.errno == 2:
             return "No file by that name", 404
@@ -60,5 +64,11 @@ def get_data_for(path_to_file=None):
             raise
 
 @app.route("/fs/<path:path_to_file>", methods=["DELETE"])
-def delete_data_for(path_to_file=None):
-    os.unlink(get_storage_path_for(path_to_file))
+def fs_delete_data_for(path_to_file=None):
+    try:
+        os.unlink(get_storage_path_for(path_to_file))
+        return "Thanks"
+    except IOError, e:
+        if e.errno == 2:
+            return "No file by that name", 404
+        raise

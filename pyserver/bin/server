@@ -9,7 +9,6 @@ if [ ! $? -eq 0 ]; then
     echo NO BREW, BAILING!
     exit 10
 fi
-pythonbrew venv use .pyenv
 export PYTHONPATH=`pwd`:$PYTHONPATH
 if [ ! -n "$PORT" ]; then
     PORT=5000
@@ -27,10 +26,10 @@ case $1 in
         $DIR/stop-server
     ;;
     debug)
-		exec pyserver/core.py start --port $PORT --host $BIND_INTERFACE
+		exec python pyserver start --port $PORT --host $BIND_INTERFACE
     ;;
     test)
-		pyserver/core.py test
+		python pyserver test
     ;;
     config)
         pyserver/core.py config

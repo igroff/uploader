@@ -44,6 +44,7 @@ def store_it(file_storage, path_to_file):
 
 @app.route("/fs/<path:path_to_file>", methods=["POST"])
 def store_data(path_to_file=None):
+    import pdb ; pdb.set_trace()
     store_it(request.files[0])
     return "Thanks", 200
 

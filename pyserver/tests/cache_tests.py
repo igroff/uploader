@@ -1,6 +1,5 @@
 import uuid
 import unittest
-from pyserver import app
 from pyserver.core import *
 
 class CacheTestFixture(unittest.TestCase):

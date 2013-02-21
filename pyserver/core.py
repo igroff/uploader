@@ -242,49 +242,19 @@ def fail():
 @app.errorhandler(500)
 def general_error_handler(error):
     logging.error("unhandled exception: %s" % error)
-
+handler_list = []
+def _load_handlers(handlers):
+    handler_list.extend(handlers)
+    for file_path in handlers:
+        split_name = os.path.splitext(file_path)
+        if split_name[1] == ".py" and not "__init__" in split_name[0]: 
+            module_name = split_name[0][2:].replace("/", ".")
+            logging.info("loading handlers from %s" % (module_name))
+            module = __import__(module_name, globals())
 
 # find and load our handler files, this isn't fancy and it's not intended to be
-handler_list = [ "./handlers/%s" % (name) for name in os.listdir("./handlers")]
-handler_list.extend(
-    [ "./pyserver/handlers/%s" % (name) for name in os.listdir("./pyserver/handlers")]
+_load_handlers([ "./handlers/%s" % (name) for name in os.listdir("./handlers")])
+_load_handlers(
+    [ "./pyserver/core_handlers/%s" % (name) for name in os.listdir("./pyserver/core_handlers")]
 )
-for file_path in handler_list:
-    split_name = os.path.splitext(file_path)
-    if split_name[1] == ".py" and not "__init__" in split_name[0]: 
-        module_name = split_name[0][2:].replace("/", ".")
-        logging.info("loading handlers from %s" % (module_name))
-        module = __import__(module_name, dir())
-
-
-if (__name__ == "__main__"):
-    """ we should only get here for debugging and testing, as we're gonna
-        use gunicorn for serving in production
-    """
-    arg_parser = ArgumentParser(description="")
-    arg_parser.add_argument("-p", "--port", default=5000, type=int)
-    arg_parser.add_argument("--host", default="127.0.0.1")
-    arg_parser.add_argument("action", choices=('start', 'test', 'config'))
-    args = arg_parser.parse_args()
-    if args.action == "start":
-        logging.getLogger().setLevel('DEBUG')
-        app.run(
-            host=args.host,
-            use_reloader=(app.config['USE_RELOADER'] == 'True'),
-            debug=True,
-            use_debugger=True,
-            port=args.port,
-            extra_files=handler_list)
-    elif args.action == "config":
-        for key, value in app.config.items():
-            print("%s: %s" % (key, value))
-    else:
-        import unittest
-        import sys
-        for name in os.listdir("./tests"):
-            split_name = os.path.splitext(name)
-            if "tests" in split_name[0] and split_name[1] == ".py":
-                execfile(os.path.join("./tests", name))
-        # unittest uses command line params, so remove ours
-        sys.argv.pop()
-        unittest.main() 
+logging.debug(app.url_map)

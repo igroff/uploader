@@ -1,7 +1,6 @@
 import unittest
 import json
 import os
-from pyserver import app
 from pyserver.core import *
 
 

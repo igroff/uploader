@@ -1,5 +1,4 @@
 import unittest
-from pyserver import app
 from pyserver.core import *
 
 class TemplateTestFixture(unittest.TestCase):

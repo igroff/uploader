@@ -2,7 +2,6 @@ import os
 import json
 import uuid
 import unittest
-from pyserver import app
 from pyserver.core import *
 
 TEST_HELLO = """Hello, {{name}}"""

@@ -7,3 +7,5 @@ tmp/
 store/
 output/
 cache/
+.todo*
+.vagrant

@@ -5,6 +5,7 @@ import sys
 import json
 from cache import FileSystemCache
 import logging
+import importlib
 import socket
 from os import path
 
@@ -26,7 +27,6 @@ app.config['VERSION'] = os.environ.get('CURRENT_SHA', None)
 app.config['X-HOSTNAME'] = os.environ.get('X_HOSTNAME', socket.gethostname())
 app.config['BIND_INTERFACE'] = os.environ.get('BIND_INTERFACE', '127.0.0.1')
 app.config['LOG_LEVEL'] = os.environ.get('LOG_LEVEL', 'WARNING')
-app.config['HANDLER_FILE'] = os.environ.get('HANDLER_FILE', None)
 app.config['USER_COOKIE_NAME'] = os.environ.get('USER_COOKIE_NAME', 'UCNID')
 app.config['ROOT_STORAGE_PATH'] = os.environ.get("ROOT_STORAGE_PATH", "./storage")
 app.config['CACHE_ROOT'] = os.environ.get('CACHE_ROOT', '%s/cache' % (app.config['ROOT_STORAGE_PATH']))
@@ -244,20 +244,17 @@ def general_error_handler(error):
     logging.error("unhandled exception: %s" % error)
 
 
-if app.config['HANDLER_FILE']:
-    logging.info("loading handlers from %s" % (app.config['HANDLER_FILE']))
-    execfile(app.config['HANDLER_FILE'])
-else:
-    # find and load our handler files, this isn't fancy and it's not intended to be
-    handler_list = [ "./handlers/%s" % (name) for name in os.listdir("./handlers")]
-    handler_list.extend(
-        [ "./pyserver/handlers/%s" % (name) for name in os.listdir("./pyserver/handlers")]
-    )
-    for file_path in handler_list:
-        split_name = os.path.splitext(file_path)
-        if split_name[1] == ".py" and not split_name[0] == "__init__":
-            logging.info("loading handlers from %s" % (file_path))
-            execfile(file_path)
+# find and load our handler files, this isn't fancy and it's not intended to be
+handler_list = [ "./handlers/%s" % (name) for name in os.listdir("./handlers")]
+handler_list.extend(
+    [ "./pyserver/handlers/%s" % (name) for name in os.listdir("./pyserver/handlers")]
+)
+for file_path in handler_list:
+    split_name = os.path.splitext(file_path)
+    if split_name[1] == ".py" and not "__init__" in split_name[0]: 
+        module_name = split_name[0][2:].replace("/", ".")
+        logging.info("loading handlers from %s" % (module_name))
+        module = __import__(module_name, dir())
 
 
 if (__name__ == "__main__"):

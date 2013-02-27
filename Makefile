@@ -1,16 +1,17 @@
 SHELL=/bin/bash
 PYENV=.$(notdir $(CURDIR))
+PYENV_DIR=~/.pythonbrew/venvs/Python-2.7.2/${PYENV}
 with_brew=bash -i -c 'source ~/.pythonbrew/etc/bashrc && $(1)'
 with_venv=bash -i -c 'source ~/.pythonbrew/etc/bashrc && pythonbrew venv use $(PYENV) && $(1)'
 
 .PHONY: clean start test debug setup freeze docs show_config git_hooks crontab
 
 $(if $(shell test -f ~/.pythonbrew/etc/bashrc && echo pants;  ), $(info found me some brew), $(error OH SHIT, NO BREW))
-debug: ${PYENV}
+debug: ${PYENV_DIR}
 	@exec $(call with_venv, exec pyserver/bin/server debug)
 
-${PYENV}:
-	$(call with_brew, pythonbrew venv create --no-site-packages $@)
+${PYENV_DIR}:
+	$(call with_brew, pythonbrew venv create --no-site-packages ${PYENV})
 	$(call with_venv, pip install --no-index --find-links=file://`pwd`/pyserver/packages/ -r pyserver/etc/frozen)
 	-mkdir tmp
 	$(call with_venv, cp `pwd`/pyserver/packages/birkenfeld-sphinx-contrib-f60d4a35adab.tar.gz ./tmp/)
@@ -21,7 +22,6 @@ ${PYENV}:
 	cd tmp/ && unzip apsw-3.7.14.1-r1.zip
 	$(call with_venv, cd tmp/apsw-3.7.14.1-r1 && python setup.py fetch --all --missing-checksum-ok build --enable-all-extensions install)
 	-rm -rf tmp/
-	touch $@
 
 var/logs: 
 	mkdir -p var/logs
@@ -32,10 +32,10 @@ var/logs:
 
 setup: var/logs
 	
-start: setup ${PYENV}
+start: setup ${PYENV_DIR}
 	@exec $(call with_venv, exec pyserver/bin/server start)
 
-test: ${PYENV}
+test: ${PYENV_DIR}
 	@-rm -rf ./output
 	@-find . -name '*.pyc' | xargs rm
 ifdef TESTS
@@ -47,10 +47,10 @@ endif
 show_config:
 	@pyserver/bin/server config
 
-freeze: ${PYENV}
+freeze: ${PYENV_DIR}
 	$(call with_venv, pip freeze)
 
-docs: .doc_build ${PYENV}
+docs: .doc_build ${PYENV_DIR}
 	rm -rf .doc_build/text/*
 	rm -rf .doc_build/doctrees/*
 	$(call with_venv, sphinx-build -n -b text -d .doc_build/doctrees documentation .doc_build/text)
@@ -59,7 +59,6 @@ docs: .doc_build ${PYENV}
 clean: setup
 	- @rm -rf var/
 	- @rm -rf tmp/
-	- @rm ${PYENV}
 	@ $(call with_brew, pythonbrew venv delete ${PYENV})
 
 git_hooks:

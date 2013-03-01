@@ -6,6 +6,7 @@ class JSONStore(object):
 
     _create = 'CREATE TABLE IF NOT EXISTS json_store (json TEXT, [order] INTEGER, created TEXT DEFAULT CURRENT_TIMESTAMP)'
     _append = 'INSERT INTO json_store (json, [order]) VALUES (?,?)'
+    _insert_with_id = 'INSERT INTO json_store (rowid, json, [order]) VALUES (?,?,?)'
     _update = 'UPDATE json_store SET [order]=?, json=? WHERE rowid=?'
     _get = 'SELECT rowid, json FROM json_store WHERE rowid = ? ORDER BY rowid'
     _delete = 'DELETE FROM json_store WHERE rowid = ?'
@@ -33,10 +34,13 @@ class JSONStore(object):
     def destroy(self):
         os.unlink(self.path)
 
-    def append(self, data, order=0):
+    def append(self, data, id=None, order=0):
         with self.get_conn() as conn:
             cursor = conn.cursor()
-            cursor.execute(self._append, [self.convert(data), order])
+            if id:
+                cursor.execute(self._insert_with_id, [id, self.convert(data), order])
+            else:
+                cursor.execute(self._append, [self.convert(data), order])
             return conn.last_insert_rowid()
     
     def update(self, id, data, order=0):

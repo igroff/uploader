@@ -29,6 +29,19 @@ class StoreFixture(unittest.TestCase):
         self.assertFalse("rowid" in loaded_data)
         self.assertEqual("the name", loaded_data['name'])
 
+    def test_post_with_id_creates(self):
+        id = 388273
+        data = dict(one=1, name="the name")
+        response = self.app.post("/store/%s/%d" % (self.store_name, id), data=data)
+        self.assertEqual(200, response.status_code)
+        loaded_data = json.loads(response.data)
+        response = self.app.get("/store/%s/%d" % (self.store_name, id))
+        loaded_data = json.loads(response.data)
+        self.assertEqual(1, loaded_data['one'])
+        self.assertEqual(id, loaded_data['id'])
+        self.assertFalse("rowid" in loaded_data)
+        self.assertEqual("the name", loaded_data['name'])
+
     def test_store_data_inbound_json(self):
         data = dict(one=1, name="the name")
         response = self.app.post("/store/%s" % self.store_name, content_type="application/json", data=json.dumps(data))
@@ -64,12 +77,12 @@ class StoreFixture(unittest.TestCase):
         self.assertEqual(200, response.status_code)
         self.assertEqual("p({});", response.data)
 
-    def test_update_non_existant_item(self):
+    def test_update_non_existant_item_is_allowed_at_all(self):
         response = self.app.post(
-            "/store/%s/%s" % (self.store_name, 48383728),
+            "/store/%s/%d" % (self.store_name, 48383728),
             data=dict(something="value")
         )
-        self.assertEqual(404, response.status_code)
+        self.assertEqual(200, response.status_code)
         self.assertEquals("{}", response.data)
 
     def test_update_and_list(self):

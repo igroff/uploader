@@ -53,8 +53,9 @@ def store_in(store_name):
 @app.route("/store/<store_name>/<int:id>", methods=['POST'])
 @make_my_response_json
 def update(store_name, id):
-    """ Updates the item identified by <id>, in store named <store_name>
-
+    """ Updates the item identified by <id>, in store named <store_name>.  
+        As a convenience, if the item specified by id DOES NOT already exist
+        it will be added.
     """
     if request.json:
         data = request.json
@@ -71,7 +72,9 @@ def update(store_name, id):
                 stored[key] = value
         get_named_store(store_name).update(id, stored)
     else:
-        return dict(status_code=404)
+        # we're allowing for an update with a non existant item
+        # which will simply create the item with the given id
+        get_named_store(store_name).append(data, id)
 
 @app.route("/store/<store_name>/<int:id>", methods=["GET"])
 @make_my_response_json

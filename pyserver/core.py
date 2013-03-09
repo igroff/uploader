@@ -18,6 +18,8 @@ from functools import wraps
 from werkzeug import secure_filename
 from werkzeug.http import http_date
 
+import messages
+
 
 STATIC_DIR = os.environ.get('STATIC_DIR', path.join(os.getcwd(), 'static'))
 TEMPLATE_DIR = os.environ.get('TEMPLATE_DIR', path.join(os.getcwd(), 'templates'))
@@ -235,6 +237,18 @@ def fail():
         :statuscode 500: always returns failure
     """
     raise Exception("Test exception so you know how the app behaves")
+
+@app.route("/message/local_publish", methods=["GET", "POST"])
+@make_my_response_json
+def publish_message():
+    if request.json:
+        msg = json.dumps(request.json)
+    else:
+        data = request.values.to_dict(flat=False)
+        msg = convert_types_in_dictionary(remove_single_element_lists(data))
+        msg = json.dumps(msg)
+    messages.send(msg, messages.LOCAL_PUBLISH)
+    return dict(message="ok")
 
 # end views 
 ################################################################################

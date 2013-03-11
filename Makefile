@@ -6,7 +6,7 @@ with_venv=bash -i -c 'source ~/.pythonbrew/etc/bashrc && pythonbrew venv use $(P
 
 .PHONY: clean start test debug setup freeze docs show_config git_hooks crontab
 
-$(if $(shell test -f ~/.pythonbrew/etc/bashrc && echo pants;  ), $(info found me some brew), $(error OH SHIT, NO BREW))
+$(if $(shell test -f ~/.pythonbrew/etc/bashrc && echo pants;  ), $(info # found me some brew), $(error # OH SHIT, NO BREW))
 debug: ${PYENV_DIR}
 	@exec $(call with_venv, exec pyserver/bin/server debug)
 

@@ -4,7 +4,7 @@ PYENV_DIR=~/.pythonbrew/venvs/Python-2.7.2/${PYENV}
 with_brew=bash -i -c 'source ~/.pythonbrew/etc/bashrc && $(1)'
 with_venv=bash -i -c 'source ~/.pythonbrew/etc/bashrc && pythonbrew venv use $(PYENV) && $(1)'
 
-.PHONY: clean start test debug setup freeze docs show_config git_hooks crontab
+.PHONY: clean start test debug setup freeze docs show_config git_hooks crontab build
 
 $(if $(shell test -f ~/.pythonbrew/etc/bashrc && echo pants;  ), $(info # found me some brew), $(error # OH SHIT, NO BREW))
 debug: ${PYENV_DIR}
@@ -31,6 +31,8 @@ var/logs:
 	mkdir -p .doc_build/doctrees
 
 setup: var/logs
+
+build: var/logs ${PYENV_DIR}
 	
 start: setup ${PYENV_DIR}
 	@exec $(call with_venv, exec pyserver/bin/server start)

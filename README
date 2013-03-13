@@ -85,6 +85,29 @@ Extending Hipflask
 Talk about package installation and the freeze file
 
 
+Adding Handlers
+===============
+
+The common way to extend the functionality of Hipflask is adding
+handlere.  Hipflask provides a set of (seemingly) useful out-of-the-
+box handlers.
+
+Hipflask creates an application instance which it will manage, this
+application is shared with all the handlers including the out-of-the-
+box handlers.  Creating handlers involves defining handlers and
+attaching them to the Hipflask application, this is done like:
+
+   from pyserver.core import app
+
+   @app.route("/hello", methods=["GET"])
+   def howdy():
+     return "World!"
+
+from pyserver.core import app - this provides access to the Hipflask
+application object to which all handlers will be attached.  The rest
+of the example is simply the definition of the handler.
+
+
 Configuration
 *************
 

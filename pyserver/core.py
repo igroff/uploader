@@ -249,6 +249,7 @@ def fail():
 @app.route("/message/local_publish", methods=["GET", "POST"])
 @make_my_response_json
 def publish_message():
+    """ Allows for publishing of a local message.  """
     if request.json:
         msg = json.dumps(request.json)
     else:

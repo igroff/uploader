@@ -4,9 +4,4 @@ lockfile -1 -r -1 build.lock
 make build
 rm -rf build.lock
 
-
-if [ "${PORT}x" != "x" ]; then
-  exec make start -e PORT=${PORT}
-else
-  exec make start
-fi
+exec make start

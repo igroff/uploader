@@ -58,12 +58,19 @@ the below:
   virtual environment.  You'll want to ( make clean ; make test ) to
   make sure everything has the highest likelihood of working.
 
+* docs  - Uses sphinx to build the documentation for hipflask.  See
+  'Documenting Hipflask'
+
 In the non development case of using hipflask it may be the case that
 mutliple instances of Hipflask are needed to run concurrently, to
 assist in this and avoid redundant environment setup a script 'start'
 is provided.  The sole purpose is to synchronize the build stage so
 multiple instances don't try to setup the (virtual) environment
 simultaneously.
+
+
+Documenting Hipflask
+********************
 
 
 Testing
@@ -176,10 +183,6 @@ GET /diagnostic/fail
 
    Status Codes:
       * **500** -- always returns failure
-
-GET /message/local_publish
-
-   Allows for publishing of a local message.
 
 POST /message/local_publish
 

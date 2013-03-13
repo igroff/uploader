@@ -246,7 +246,7 @@ def fail():
     """
     raise Exception("Test exception so you know how the app behaves")
 
-@app.route("/message/local_publish", methods=["GET", "POST"])
+@app.route("/message/local_publish", methods=["POST"])
 @make_my_response_json
 def publish_message():
     """ Allows for publishing of a local message.  """

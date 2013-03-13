@@ -2,12 +2,13 @@ import os
 import json
 import os.path
 from pyserver.store import JSONStore
-from pyserver.core import app, get_storage_location, make_my_response_json
+from pyserver.core import app, get_storage_location, make_my_response_json, emit_local_message
 from pyserver.core import convert_types_in_dictionary, remove_single_element_lists
 from flask import request, g
 
 
 app.config['STORAGE_ROOT'] = os.environ.get('STORAGE_ROOT', get_storage_location("jstore"))
+MESSAGE_SOURCE = __name__
 
 
 def get_named_store(name):
@@ -48,7 +49,9 @@ def store_in(store_name):
     else:
         data = request.values.to_dict(flat=False)
         data = convert_types_in_dictionary(remove_single_element_lists(data))
-    return dict(id=get_named_store(store_name).append(data))
+    store_response = dict(id=get_named_store(store_name).append(data))
+    emit_local_message(MESSAGE_SOURCE, dict(action="add", store_name=store_name, data=data))
+    return store_response
 
 @app.route("/store/<store_name>/<int:id>", methods=['POST'])
 @make_my_response_json
@@ -63,7 +66,9 @@ def update(store_name, id):
         data = request.values.to_dict(flat=False)
         data = convert_types_in_dictionary(remove_single_element_lists(data))
     stored = get_named_store(store_name).get(id)
+    action = None
     if stored:
+        action = 'update'
         stored = json.loads(stored['json'])
         for key, value in data.items():
             if (value == None or value == 'null') and key in stored:
@@ -72,9 +77,12 @@ def update(store_name, id):
                 stored[key] = value
         get_named_store(store_name).update(id, stored)
     else:
+        action = 'add'
         # we're allowing for an update with a non existant item
         # which will simply create the item with the given id
         get_named_store(store_name).append(data, id)
+
+    emit_local_message(MESSAGE_SOURCE, dict(action=action, store_name=store_name, data=data))
 
 @app.route("/store/<store_name>/<int:id>", methods=["GET"])
 @make_my_response_json
@@ -141,4 +149,4 @@ def get_list(store_name):
 @make_my_response_json
 def delete_item(store_name, id):
     get_named_store(store_name).delete(id)
-    
+    emit_local_message(MESSAGE_SOURCE, dict(action='delete', store_name=store_name, id=id))

@@ -34,6 +34,9 @@ app.config['ROOT_STORAGE_PATH'] = os.environ.get("ROOT_STORAGE_PATH", "./storage
 app.config['CACHE_ROOT'] = os.environ.get('CACHE_ROOT', '%s/cache' % (app.config['ROOT_STORAGE_PATH']))
 app.config['USE_RELOADER'] = os.environ.get('USE_RELOADER', 'True')
 app.config['TEMPLATE_DIR'] = TEMPLATE_DIR
+# this is to be a comman delimited list of sources for which events will be emitted 
+# this of course depends on the system supporting events for those sources
+app.config['LOCAL_EVENT_SOURCES'] = frozenset(os.environ.get('LOCAL_EVENT_SOURCES', '').split(","))
 
 app.config['_CACHE'] = FileSystemCache(app.config['CACHE_ROOT'])
 app.jinja_loader = ChoiceLoader([
@@ -46,6 +49,11 @@ logging.basicConfig(
     stream=sys.stderr,
     level=app.config['LOG_LEVEL']
 )
+
+def emit_local_message(source, message=None):
+    if source in app.config['LOCAL_EVENT_SOURCES']:
+        wrapped = json.dumps(dict(source=source, message=message, user_token=g.user_token))
+        messages.send(wrapped, messages.LOCAL_PUBLISH)
 
 def get_storage_location(named):
     return path.abspath(path.join(app.config['ROOT_STORAGE_PATH'], named))

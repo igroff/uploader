@@ -1,4 +1,6 @@
 import unittest
+import sys
+from StringIO import StringIO
 from pyserver.store import JSONStore
 from uuid import uuid4
 from pyserver.core import *
@@ -6,12 +8,88 @@ from pyserver.core import *
 class StoreFixture(unittest.TestCase):
     def setUp(self):
         app.config['TESTING'] = True
+        app.config['LOCAL_EVENT_SOURCES'] = ''
         self.store_name = str(uuid4())
         self.app = app.test_client()
         self.app.debug = True
+        self.out_buffer = StringIO()
+        self.orig_stdout = sys.stdout
+        sys.stdout = self.out_buffer
+        self.echo_stdout = True
 
     def tearDown(self):
-        pass
+        sys.stdout = self.orig_stdout
+        if self.echo_stdout and self.out_buffer.getvalue():
+            print(self.out_buffer.getvalue())
+
+    def test_store_data_with_local_events(self):
+        app.config['LOCAL_EVENT_SOURCES'] = frozenset(['pyserver.core_handlers.store_handlers'])
+        self.echo_stdout = False
+        data = dict(one=1, name="the name")
+        response = self.app.post("/store/%s" % self.store_name, data=data)
+        self.assertEqual(200, response.status_code)
+        id = json.loads(response.data)['id']
+        self.assertTrue(type(id) == int)
+        event = json.loads(self.out_buffer.getvalue())
+        self.assertEquals('pyserver.core_handlers.store_handlers', event['source'])
+        self.assertEquals('DEFAULT', event['user_token'])
+        message = event['message']
+        self.assertEquals('add', message['action'])
+        self.assertEquals(self.store_name, message['store_name'])
+        self.assertEquals('the name', message['data']['name'])
+        self.assertEquals(1, message['data']['one'])
+
+    def test_update_data_with_local_events(self):
+        self.echo_stdout = False
+        data = dict(one=1, name="the name")
+        response = self.app.post("/store/%s" % self.store_name, data=data)
+        self.assertEqual(200, response.status_code)
+        id = json.loads(response.data)['id']
+        self.assertTrue(type(id) == int)
+        app.config['LOCAL_EVENT_SOURCES'] = frozenset(['pyserver.core_handlers.store_handlers'])
+        response = self.app.post("/store/%s/%d" % (self.store_name, id), data=data)
+        event = json.loads(self.out_buffer.getvalue())
+        self.assertEquals('pyserver.core_handlers.store_handlers', event['source'])
+        self.assertEquals('DEFAULT', event['user_token'])
+        message = event['message']
+        self.assertEquals('update', message['action'])
+        self.assertEquals(self.store_name, message['store_name'])
+        self.assertEquals('the name', message['data']['name'])
+        self.assertEquals(1, message['data']['one'])
+
+    def test_post_with_id_creates_with_local_events(self):
+        app.config['LOCAL_EVENT_SOURCES'] = frozenset(['pyserver.core_handlers.store_handlers'])
+        self.echo_stdout = False
+        id = 388273
+        data = dict(one=1, name="the name")
+        response = self.app.post("/store/%s/%d" % (self.store_name, id), data=data)
+        self.assertEqual(200, response.status_code)
+        event = json.loads(self.out_buffer.getvalue())
+        self.assertEquals('pyserver.core_handlers.store_handlers', event['source'])
+        self.assertEquals('DEFAULT', event['user_token'])
+        message = event['message']
+        self.assertEquals('add', message['action'])
+        self.assertEquals(self.store_name, message['store_name'])
+        self.assertEquals('the name', message['data']['name'])
+        self.assertEquals(1, message['data']['one'])
+
+    def test_delete_with_local_events(self):
+        data = dict(one=1, name="the name")
+        response = self.app.post("/store/%s" % self.store_name, data=data)
+        self.assertEqual(200, response.status_code)
+        id = json.loads(response.data)['id']
+        self.assertTrue(type(id) == int)
+        app.config['LOCAL_EVENT_SOURCES'] = frozenset(['pyserver.core_handlers.store_handlers'])
+        self.echo_stdout = False
+        response = self.app.delete("/store/%s/%d" % (self.store_name, id))
+        self.assertEqual(200, response.status_code)
+        event = json.loads(self.out_buffer.getvalue())
+        self.assertEquals('pyserver.core_handlers.store_handlers', event['source'])
+        self.assertEquals('DEFAULT', event['user_token'])
+        message = event['message']
+        self.assertEquals('delete', message['action'])
+        self.assertEquals(self.store_name, message['store_name'])
+        self.assertEquals(id, message['id'])
 
     def test_store_data(self):
         data = dict(one=1, name="the name")

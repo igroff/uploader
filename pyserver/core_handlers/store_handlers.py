@@ -17,7 +17,7 @@ def get_named_store(name):
     
 @app.route("/store/<store_name>", methods=['POST'])
 @make_my_response_json
-def store_in(store_name):
+def pyserver_core_store_handlers_store_in(store_name):
     """
         Save the data provided within the named store. Each POST to this endpoint 
         referring to the same 'store_name' will append data a list referred to by 
@@ -55,7 +55,7 @@ def store_in(store_name):
 
 @app.route("/store/<store_name>/<int:id>", methods=['POST'])
 @make_my_response_json
-def update(store_name, id):
+def pyserver_core_store_handlers_update(store_name, id):
     """ Updates the item identified by <id>, in store named <store_name>.  
         As a convenience, if the item specified by id DOES NOT already exist
         it will be added.
@@ -86,7 +86,7 @@ def update(store_name, id):
 
 @app.route("/store/<store_name>/<int:id>", methods=["GET"])
 @make_my_response_json
-def get_item(store_name, id):
+def pyserver_core_store_handlers_get_item(store_name, id):
     """
         Returns the data stored in the list 'store_name' with the provided id, or
         an empty JSON object '{}' if an item with the associated id doesn't exist.
@@ -121,7 +121,7 @@ def get_item(store_name, id):
 
 @app.route("/store/<store_name>", methods=["GET"])
 @make_my_response_json
-def get_list(store_name):
+def pyserver_core_store_handlers_get_list(store_name):
     """
     .. sourcecode:sh
 
@@ -147,6 +147,6 @@ def get_list(store_name):
 
 @app.route("/store/<store_name>/<int:id>", methods=["DELETE"])
 @make_my_response_json
-def delete_item(store_name, id):
+def pyserver_core_store_handlers_delete_item(store_name, id):
     get_named_store(store_name).delete(id)
     emit_local_message(MESSAGE_SOURCE, dict(action='delete', store_name=store_name, id=id))

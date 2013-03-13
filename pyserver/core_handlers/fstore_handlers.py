@@ -45,12 +45,12 @@ def store_it(file_storage, path_to_file):
 
 
 @app.route("/fs/<path:path_to_file>", methods=["POST"])
-def fs_store_data(path_to_file=None):
+def pyserver_core_fs_store_data(path_to_file=None):
     store_it(request.files['file'], path_to_file)
     return "Thanks"
 
 @app.route("/fs/<path:path_to_file>", methods=["GET"])
-def fs_get_data_for(path_to_file=None):
+def pyserver_core_fs_get_data_for(path_to_file=None):
     try:
         stored_file_path = get_storage_path_for(path_to_file)
         return send_from_directory(os.path.dirname(stored_file_path),
@@ -64,7 +64,7 @@ def fs_get_data_for(path_to_file=None):
             raise
 
 @app.route("/fs/<path:path_to_file>", methods=["DELETE"])
-def fs_delete_data_for(path_to_file=None):
+def pyserver_core_fs_delete_data_for(path_to_file=None):
     try:
         os.unlink(get_storage_path_for(path_to_file))
         return "Thanks"

@@ -9,14 +9,14 @@ HTML_CONTENT_TYPE_HEADER = {"Content-Type": "text/html"}
 JSON_CONTENT_TYPE_HEADER = {"Content-Type": "application/json"}
 
 @app.route("/template/<path:template_path>")
-def return_template_at(template_path):
+def pyserver_core_template_render_handlers_return_template_at(template_path):
     """ Returns the unrendered contents of a template """
     return send_file(
             os.path.join(app.config['TEMPLATE_DIR'], template_path)
             )
 
 @app.route("/render/<path:template_path>", methods=["GET", "POST"])
-def render_template_at(template_path):
+def pyserver_core_template_render_handlers_render_template_at(template_path):
     """ Given a request that contains data as either a json object,
         or in the body of the request, render the template requested.
 

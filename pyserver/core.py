@@ -211,7 +211,7 @@ app.preprocess_request = global_request_handler
 @app.route("/", methods=["GET"])
 @app.route("/diagnostic", methods=["GET"])
 @make_my_response_json
-def diagnostic_view():
+def pyserver_core_diagnostic_view():
     """
         Used to return the status of the application, including the version
         of the running application.
@@ -226,7 +226,7 @@ def diagnostic_view():
 
 @app.route("/diagnostic/echo", methods=["GET"])
 @make_my_response_json
-def diagnostic_echo_view():
+def pyserver_core_diagnostic_echo_view():
     """
         Helper endpoint for developing diagnostic checks.  Simply echoes back 
         any values provided in the inbound request.
@@ -237,7 +237,7 @@ def diagnostic_echo_view():
     return request.values.to_dict()
 
 @app.route("/diagnostic/fail", methods=["GET"])
-def fail():
+def pyserver_core_fail():
     """ This endpoint is designed to show how the application fails.  Can be used
         to assist in creating monitors to check the application health and respond
         to failures.
@@ -248,7 +248,7 @@ def fail():
 
 @app.route("/message/local_publish", methods=["POST"])
 @make_my_response_json
-def publish_message():
+def pyserver_core_publish_message():
     """ Allows for publishing of a local message.  """
     if request.json:
         msg = json.dumps(request.json)

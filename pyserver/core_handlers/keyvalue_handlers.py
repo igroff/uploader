@@ -75,7 +75,7 @@ def delete_it(key):
 
 @app.route("/kv/<key>", methods=["POST"])
 @make_my_response_json
-def store_data(key=None):
+def pyserver_core_keyvalue_handlers_store_data(key=None):
     """
         Store all of the data provided in the body of the request, associated with the
         specified key.  The data stored includes the content type information of the request
@@ -102,7 +102,7 @@ def store_data(key=None):
     return dict(message="ok")
 
 @app.route("/kv/<key>", methods=["GET"])
-def get_data_for(key=None):
+def pyserver_core_keyvalue_handlers_get_data_for(key=None):
     """
         For a given key return the data stored, if any.
     
@@ -127,7 +127,7 @@ def get_data_for(key=None):
 
 @app.route("/kv/<key>", methods=["DELETE"])
 @make_my_response_json
-def delete_data_for(key):
+def pyserver_core_keyvalue_handlers_delete_data_for(key):
     """ 
         Removes all stored data for a given key.
     """

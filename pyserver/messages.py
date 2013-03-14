@@ -9,3 +9,4 @@ def send(message, message_type=LOCAL_PUBLISH):
     # as opposed to error, logging, etc. go to stdout and the 
     # rest end up on stderr
     sys.stdout.write("%s\n" % message)
+    sys.stdout.flush()

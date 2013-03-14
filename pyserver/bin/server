@@ -18,10 +18,6 @@ if [ ! -n "$BIND_INTERFACE" ]; then
     BIND_INTERFACE=127.0.0.1
 fi
 
-# we want to disable buffering of our output and error streams
-# so that we can get logging and messages out in a timely manner
-export PYTHONBUFFERED=False
-
 case $1 in
     start)
 		exec gunicorn --bind $BIND_INTERFACE:$PORT pyserver.core:app

@@ -235,6 +235,29 @@ class StoreFixture(unittest.TestCase):
         response = self.app.get("/store/%s/%d" % (self.store_name, id))
         self.assertEqual(404, response.status_code)
 
+    def test_delete_invalid_entry(self):
+        id = 3838383
+        response = self.app.get("/store/%s/%d" % (self.store_name, id))
+        self.assertEqual(404, response.status_code)
+        response = self.app.delete("/store/%s/%d" % (self.store_name, id))
+        self.assertEqual(200, response.status_code)
+
+    def test_delete_including_invalid(self):
+        data = dict(one=1, name="the name")
+        response = self.app.post("/store/%s" % self.store_name, data=data)
+        self.assertEqual(200, response.status_code)
+        id = json.loads(response.data)['id']
+        self.assertTrue(type(id) == int)
+
+        # make sure we don't have the one we expect not to exist
+        response = self.app.get("/store/%s/288273" % (self.store_name))
+        self.assertEqual(404, response.status_code)
+
+        response = self.app.delete("/store/%s/%d,288273" % (self.store_name, id))
+        self.assertEqual(200, response.status_code)
+        response = self.app.get("/store/%s/%d" % (self.store_name, id))
+        self.assertEqual(404, response.status_code)
+
     def test_delete_multiple(self):
         data = dict(one=1, name="the name")
         response = self.app.post("/store/%s" % self.store_name, data=data)

@@ -148,6 +148,14 @@ def pyserver_core_store_handlers_get_list(store_name):
 @app.route("/store/<store_name>/<ids>", methods=["DELETE"])
 @make_my_response_json
 def pyserver_core_store_handlers_delete_item(store_name, ids):
+    """
+        Supports the deletion of a single item or a list of items.  
+        The id parameter can be a single integer to delete one item or a comma
+        separated list of integers to delete multiple items.
+
+        This method supports local events and, if enabled, will emit an event
+        for each item deleted.
+    """
     for id in ids.split(","):
         id = int(id)
         get_named_store(store_name).delete(id)

@@ -234,3 +234,20 @@ class StoreFixture(unittest.TestCase):
         self.assertEqual(200, response.status_code)
         response = self.app.get("/store/%s/%d" % (self.store_name, id))
         self.assertEqual(404, response.status_code)
+
+    def test_delete_multiple(self):
+        data = dict(one=1, name="the name")
+        response = self.app.post("/store/%s" % self.store_name, data=data)
+        self.assertEqual(200, response.status_code)
+        id1 = json.loads(response.data)['id']
+        data = dict(one=1, name="the name")
+        response = self.app.post("/store/%s" % self.store_name, data=data)
+        self.assertEqual(200, response.status_code)
+        id2 = json.loads(response.data)['id']
+
+        response = self.app.delete("/store/%s/%d,%d" % (self.store_name, id1, id2))
+        self.assertEqual(200, response.status_code)
+        response = self.app.get("/store/%s/%d" % (self.store_name, id1))
+        self.assertEqual(404, response.status_code)
+        response = self.app.get("/store/%s/%d" % (self.store_name, id2))
+        self.assertEqual(404, response.status_code)

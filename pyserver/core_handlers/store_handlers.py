@@ -145,8 +145,10 @@ def pyserver_core_store_handlers_get_list(store_name):
         items.append(combined)
     return items
 
-@app.route("/store/<store_name>/<int:id>", methods=["DELETE"])
+@app.route("/store/<store_name>/<ids>", methods=["DELETE"])
 @make_my_response_json
-def pyserver_core_store_handlers_delete_item(store_name, id):
-    get_named_store(store_name).delete(id)
-    emit_local_message(MESSAGE_SOURCE, dict(action='delete', store_name=store_name, id=id))
+def pyserver_core_store_handlers_delete_item(store_name, ids):
+    for id in ids.split(","):
+        id = int(id)
+        get_named_store(store_name).delete(id)
+        emit_local_message(MESSAGE_SOURCE, dict(action='delete', store_name=store_name, id=id))

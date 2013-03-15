@@ -83,7 +83,7 @@ class KVTestFixture(unittest.TestCase):
         self.assertTrue(200, response.status_code)
         response = self.app.get("/kv/my_key")
         self.assertTrue(200, response.status_code)
-        response = self.app.delete("/my_key")
+        response = self.app.delete("/kv/my_key")
         self.assertTrue(200, response.status_code)
         response = self.app.get("/kv/my_key")
         self.assertTrue(404, response.status_code)

@@ -7,7 +7,6 @@ class TestFixture(unittest.TestCase):
         app.config['TESTING'] = True
         self.app = app.test_client()
         self.app_cache = app.config['_CACHE']
-        self.app.debug = True
     
     def tearDown(self):
         app.config['_CACHE'] = self.app_cache
@@ -20,7 +19,27 @@ class TestFixture(unittest.TestCase):
     def test_echo(self):
         response = self.app.get("/echo?something=k")
         self.assertEquals(200, response.status_code)
+
+    def test_fail_json_formatted_response(self):
+        previous_prop = app.config['PROPAGATE_EXCEPTIONS']
+        app.config['PROPAGATE_EXCEPTIONS'] = False
+        response = self.app.get("/diagnostic/fail", content_type='json')
+        app.config['PROPAGATE_EXCEPTIONS'] = previous_prop
+        self.assertEquals(500, response.status_code)
+        self.assertTrue(json.loads(response.data))
+        self.assertTrue("eid" in json.loads(response.data))
+        self.assertEquals("application/json", response.content_type)
         
+    def test_fail_html_formatted_response(self):
+        previous_prop = app.config['PROPAGATE_EXCEPTIONS']
+        app.config['PROPAGATE_EXCEPTIONS'] = False
+        response = self.app.get("/diagnostic/fail")
+        app.config['PROPAGATE_EXCEPTIONS'] = previous_prop
+        self.assertEquals(500, response.status_code)
+        # we only explicily set application/json so we'll be expecting
+        # flask to chose the right one
+        self.assertTrue("text/html" in  response.content_type)
+
     def test_head_root_health_check(self):
         response = self.app.get("/")
         self.assertTrue(200, response.status_code)

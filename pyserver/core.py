@@ -3,6 +3,7 @@
 import os
 import sys
 import json
+from uuid import uuid4
 from cache import FileSystemCache
 import logging
 import importlib
@@ -264,7 +265,18 @@ def pyserver_core_publish_message():
 
 @app.errorhandler(500)
 def general_error_handler(error):
-    logging.error("unhandled exception: %s" % error)
+    et, ev, tb = sys.exc_info()
+    assert ev == error
+    eid = str(uuid4())
+    logging.error("unhandled exception(%s):" % (eid), exc_info = (et, ev, tb))
+    context = dict(eid=eid)
+    if request.content_type and 'json' in request.content_type:
+        return (render_template("500.json", **context),
+            500,
+            {"Content-Type": "application/json"})
+    else:
+        return render_template("500.html", **context), 500
+
 handler_list = []
 def _load_handlers(handlers):
     handler_list.extend(handlers)

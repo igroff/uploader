@@ -155,20 +155,13 @@ def json_response(*args, **kwargs):
     """
     content_type = "application/json";
     # if provided, use the status code otherwise default to 200
-    status_code = kwargs.get('status_code', 200)
-    # remove it so it doesn't end up in our response
-    if 'status_code' in kwargs:
-        del(kwargs['status_code'])
+    # we remove it so it doesn't end up in our response
+    status_code = kwargs.pop('status_code', 200)
 
     # we're going to allow the callback to come essentially from wherever the user
-    # choses to provide it
-    callback = kwargs.get('callback', None) or request.values.get('callback', None)
-    
-    # we'll remove the callback if it was passed in kwargs, since we can 
-    # get a callback from multiple places we check specifically for its 
-    # presence
-    if 'callback' in kwargs:
-        del(kwargs['callback'])
+    # choses to provide it, again remove it from kwargs so it doesn't end
+    # up in the response
+    callback = kwargs.pop('callback', None) or request.values.get('callback', None)
 
     # handle the response being a list of items
     if args:

@@ -14,6 +14,8 @@ def get_storage_path_for(key):
     hash_o = hashlib.sha256()
     hash_o.update(key)
     storage_key = hash_o.hexdigest()
+    # making a path that looks something like
+    # <KVSTORE_ROOT>/<first 2 chars of key hash>/<2nd 2 chars of key hash>/<key hash>
     return os.path.join(
         app.config['KVSTORE_ROOT'],
         storage_key[:2],

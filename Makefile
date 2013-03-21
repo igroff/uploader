@@ -20,7 +20,10 @@ ${PYENV_DIR}:
 	$(call with_venv, cd tmp/birkenfeld-sphinx-contrib-f60d4a35adab/httpdomain && python setup.py install)
 	cp `pwd`/pyserver/packages/apsw-3.7.14.1-r1.zip tmp/
 	cd tmp/ && unzip apsw-3.7.14.1-r1.zip
-	$(call with_venv, cd tmp/apsw-3.7.14.1-r1 && python setup.py fetch --all --missing-checksum-ok build --enable-all-extensions install)
+	cp `pwd`/pyserver/packages/sqlite-autoconf-3071600.tar.gz tmp/
+	cd tmp/ && tar xf sqlite-autoconf-3071600.tar.gz && mv sqlite-autoconf-3071600/ apsw-3.7.14.1-r1/sqlite3
+	#$(call with_venv, cd tmp/apsw-3.7.14.1-r1 && python setup.py fetch --all --missing-checksum-ok build --enable-all-extensions install)
+	$(call with_venv, cd tmp/apsw-3.7.14.1-r1 && python setup.py build --enable-all-extensions install)
 	-rm -rf tmp/
 
 var/logs: 

@@ -3,6 +3,7 @@ PYENV=.$(notdir $(CURDIR))
 PYENV_DIR=~/.pythonbrew/venvs/Python-2.7.2/${PYENV}
 with_brew=bash -i -c 'source ~/.pythonbrew/etc/bashrc && $(1)'
 with_venv=bash -i -c 'source ~/.pythonbrew/etc/bashrc && pythonbrew venv use $(PYENV) && $(1)'
+FROZEN_HASH_FILE=.frozen-hash-$(shell openssl md5 pyserver/etc/frozen | sed -e 's[MD5(pyserver/etc/frozen)= [[g')
 
 .PHONY: clean start test debug setup freeze docs show_config git_hooks crontab build
 
@@ -10,7 +11,12 @@ $(if $(shell test -f ~/.pythonbrew/etc/bashrc && echo pants;  ), $(info # found 
 debug: ${PYENV_DIR}
 	@exec $(call with_venv, exec pyserver/bin/server debug)
 
-${PYENV_DIR}:
+${FROZEN_HASH_FILE}:
+	$(MAKE) clean
+	-@rm .frozen-hash*
+	echo "environment was built for this version of the frozen file" > ${FROZEN_HASH_FILE}
+
+${PYENV_DIR}: ${FROZEN_HASH_FILE}
 	$(call with_brew, pythonbrew venv create --no-site-packages ${PYENV})
 	$(call with_venv, pip install --no-index --find-links=file://`pwd`/pyserver/packages/ -r pyserver/etc/frozen)
 	-mkdir tmp
@@ -63,6 +69,7 @@ docs: .doc_build ${PYENV_DIR}
 clean: setup
 	- @rm -rf var/
 	- @rm -rf tmp/
+	- @rm -rf .frozen-hash*
 	@ $(call with_brew, pythonbrew venv delete ${PYENV})
 
 git_hooks:

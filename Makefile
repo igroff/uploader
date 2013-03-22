@@ -67,7 +67,6 @@ docs: .doc_build ${PYENV_DIR}
 	cp .doc_build/text/index.txt README
 
 clean: setup
-	- @rm -rf var/
 	- @rm -rf tmp/
 	- @rm -rf .frozen-hash*
 	@ $(call with_brew, pythonbrew venv delete ${PYENV})

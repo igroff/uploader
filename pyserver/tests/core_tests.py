@@ -16,6 +16,11 @@ class TestFixture(unittest.TestCase):
         self.assertTrue('X-HOSTNAME' in response.headers)
         self.assertTrue(response.headers['X-HOSTNAME']) 
 
+    def test_response_header_has_hostname(self):
+        response = self.app.get("/diagnostic", headers=dict(Uid='pants'))
+        resp = json.loads(response.data)
+        self.assertEquals('pants', resp['uid'])
+
     def test_echo(self):
         response = self.app.get("/echo?something=k")
         self.assertEquals(200, response.status_code)

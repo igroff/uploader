@@ -30,7 +30,7 @@ app.config['VERSION'] = os.environ.get('CURRENT_SHA', None)
 app.config['X-HOSTNAME'] = os.environ.get('X_HOSTNAME', socket.gethostname())
 app.config['BIND_INTERFACE'] = os.environ.get('BIND_INTERFACE', '127.0.0.1')
 app.config['LOG_LEVEL'] = os.environ.get('LOG_LEVEL', 'WARNING')
-app.config['USER_COOKIE_NAME'] = os.environ.get('USER_COOKIE_NAME', 'UCNID')
+app.config['USER_HEADER_NAME'] = os.environ.get('USER_HEADER_NAME', 'Uid')
 app.config['ROOT_STORAGE_PATH'] = os.environ.get("ROOT_STORAGE_PATH", "./storage")
 app.config['CACHE_ROOT'] = os.environ.get('CACHE_ROOT', '%s/cache' % (app.config['ROOT_STORAGE_PATH']))
 app.config['USE_RELOADER'] = os.environ.get('USE_RELOADER', 'True')
@@ -194,7 +194,7 @@ def global_response_handler(response):
 
 def global_request_handler():
     # this needs to be safe for use by the app
-    g.user_token = secure_filename(request.cookies.get(app.config['USER_COOKIE_NAME'], 'DEFAULT'))
+    g.user_token = secure_filename(request.headers.get(app.config['USER_HEADER_NAME'], 'DEFAULT'))
 
 app.process_response = global_response_handler    
 app.preprocess_request = global_request_handler

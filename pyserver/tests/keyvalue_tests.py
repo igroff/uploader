@@ -21,6 +21,14 @@ class KVTestFixture(unittest.TestCase):
         self.assertEquals(200, response.status_code)
         self.assertEquals('p({"message": "no data for key"});', response.data)
 
+    def test_path_like_key(self):
+        key_path = "/kv/%s/%s/pants" % (uuid(),uuid())
+        response = self.app.post(key_path, data="some data")
+        self.assertEquals(200, response.status_code)
+        response = self.app.get(key_path)
+        self.assertEquals(200, response.status_code)
+        self.assertEquals("some data", response.data)
+        
     def test_odd_content_type(self):
         key_path = "/kv/%s" % (uuid())
         response = self.app.post(key_path, data="some data", content_type="superpants")

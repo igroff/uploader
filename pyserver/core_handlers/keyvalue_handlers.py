@@ -75,7 +75,7 @@ def read_it(key):
 def delete_it(key):
     os.unlink(get_storage_path_for(key))
 
-@app.route("/kv/<key>", methods=["POST"])
+@app.route("/kv/<path:key>", methods=["POST"])
 @make_my_response_json
 def pyserver_core_keyvalue_handlers_store_data(key=None):
     """
@@ -103,7 +103,7 @@ def pyserver_core_keyvalue_handlers_store_data(key=None):
     store_it(key, store_this, content_type=store_this_content_type)
     return dict(message="ok")
 
-@app.route("/kv/<key>", methods=["GET"])
+@app.route("/kv/<path:key>", methods=["GET"])
 def pyserver_core_keyvalue_handlers_get_data_for(key=None):
     """
         For a given key return the data stored, if any.
@@ -127,7 +127,7 @@ def pyserver_core_keyvalue_handlers_get_data_for(key=None):
         else:
             return (value, 200, {"Content-Type": content_type })
 
-@app.route("/kv/<key>", methods=["DELETE"])
+@app.route("/kv/<path:key>", methods=["DELETE"])
 @make_my_response_json
 def pyserver_core_keyvalue_handlers_delete_data_for(key):
     """ 

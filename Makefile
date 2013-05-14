@@ -30,6 +30,7 @@ ${PYENV_DIR}: ${FROZEN_HASH_FILE}
 	cd tmp/ && tar xf sqlite-autoconf-3071600.tar.gz && mv sqlite-autoconf-3071600/ apsw-3.7.14.1-r1/sqlite3
 	$(call with_venv, cd tmp/apsw-3.7.14.1-r1 && python setup.py build --enable-all-extensions install)
 	-rm -rf tmp/
+	touch ${PYENV_DIR}
 
 var/logs: 
 	mkdir -p var/logs

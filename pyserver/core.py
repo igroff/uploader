@@ -59,6 +59,9 @@ def emit_local_message(source, message=None):
 def get_storage_location(named):
     return path.abspath(path.join(app.config['ROOT_STORAGE_PATH'], named))
 
+def get_userid():
+    request.headers.get(app.config['USER_HEADER_NAME'], None)
+
 def remove_single_element_lists(d):
     new_dict = {}
     for key, value in d.items():

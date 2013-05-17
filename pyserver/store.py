@@ -9,17 +9,14 @@ def busy_backoff(f):
     @functools.wraps(f)
     def backed_off(*args, **kwargs):
         e = None
-        count = 0
         for i in range(12):
             try:
                 return f(*args, **kwargs)
             except apsw.BusyError, exc:
                 e = exc
                 # we'll just wait and try again
-                count = i
                 time.sleep(math.pow(2, i) / 1000)
         if e:
-            print("died at %d" % (count))
             raise e
     return backed_off
 
@@ -57,6 +54,7 @@ class JSONStore(object):
 
     def get_conn(self, flags=None):
         conn = apsw.Connection(self.path, statementcachesize=0, vfs=os.environ.get("SQLITE_VFS", "unix-dotfile"))
+        # yes we're using timeout with busy backoff
         conn.setbusytimeout(1000)
         return conn
     

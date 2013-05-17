@@ -274,3 +274,35 @@ class StoreFixture(unittest.TestCase):
         self.assertEqual(404, response.status_code)
         response = self.app.get("/store/%s/%d" % (self.store_name, id2))
         self.assertEqual(404, response.status_code)
+
+    def test_concurrent(self):
+        the_url_path = "/store/myconcurrent_key"
+        def do_get():
+            get_result = self.app.get(the_url_path)
+            # it's fine to get a 404, some concurrent reads may happen before the writes
+            self.assertTrue(get_result.status_code == 200)
+            if get_result.status_code == 200:
+                self.assertTrue(json.loads(get_result.data)[0]["name"] == "pants")
+            elif get_result.status_code == 500:
+                self.assertFail("busted")
+        def do_post():
+            post_result = self.app.post(the_url_path, data=dict(name="pants"))
+            self.assertEquals(200, post_result.status_code)
+            r = self.app.get(the_url_path)
+            self.assertEquals(200, r.status_code)
+
+        from multiprocessing import Process
+        from threading import Thread
+        ConcurrentThing = Thread
+        all_concurrent_things = []
+        do_post()
+        for x in range(200): 
+            g,p = ConcurrentThing(target=do_get), ConcurrentThing(target=do_post)
+            all_concurrent_things.append(g)
+            if x % 20 == 0:
+                all_concurrent_things.append(p)
+                p.start()
+            g.start()
+
+        for thread in all_concurrent_things:
+            thread.join()

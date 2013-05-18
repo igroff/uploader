@@ -20,6 +20,26 @@ def busy_backoff(f):
             raise e
     return backed_off
 
+def error_backoff(f):
+    """ This decorator helps retry methods when SQL or IO Errors occur this is for
+        methods that are not going to block and thus don't get a busy.
+    """
+    @functools.wraps(f)
+    def backed_off(*args, **kwargs):
+        e = None
+        for i in range(12):
+            try:
+                return f(*args, **kwargs)
+            except apsw.SQLError, exc:
+                e = exc
+            except apsw.IOError, exc:
+                e = exc
+            finally:
+                # we'll just wait and try again
+                time.sleep(math.pow(2, i) / 1000)
+        if e:
+            raise e
+    return backed_off
 
 class JSONStore(object):
 
@@ -52,8 +72,8 @@ class JSONStore(object):
             data = json.dumps(data)
         return data
 
-    def get_conn(self, flags=None):
-        conn = apsw.Connection(self.path, statementcachesize=0, vfs=os.environ.get("SQLITE_VFS", "unix-dotfile"))
+    def get_conn(self, flags=None, vfs=os.environ.get("SQLITE_VFS", "unix-dotfile")):
+        conn = apsw.Connection(self.path, statementcachesize=0, vfs=vfs)
         # yes we're using timeout with busy backoff
         conn.setbusytimeout(1000)
         return conn
@@ -76,18 +96,18 @@ class JSONStore(object):
         with self.get_conn() as conn:
             conn.cursor().execute(self._update, [order, self.convert(data), id])
 
-    @busy_backoff
+    @error_backoff
     def scan(self):
-        with self.get_conn() as conn:
+        with self.get_conn(vfs="unix-none") as conn:
             entries = []
             cursor = conn.cursor()
             for row in cursor.execute(self._scan):
                entries.append({ zt[0][0]:zt[1] for zt in zip(cursor.getdescription(), row) }) 
         return entries
 
-    @busy_backoff
+    @error_backoff
     def get(self, id):
-        with self.get_conn(flags=apsw.SQLITE_OPEN_READONLY|apsw.SQLITE_OPEN_NOMUTEX) as conn:
+        with self.get_conn(vfs="unix-none") as conn:
             cursor = conn.cursor()
             d = None
             for row in  cursor.execute(self._get, [id]):

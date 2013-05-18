@@ -282,7 +282,8 @@ class StoreFixture(unittest.TestCase):
             # it's fine to get a 404, some concurrent reads may happen before the writes
             self.assertTrue(get_result.status_code == 200)
             if get_result.status_code == 200:
-                self.assertTrue(json.loads(get_result.data)[0]["name"] == "pants")
+                for item in json.loads(get_result.data):
+                    self.assertTrue(item["name"] == "pants")
             elif get_result.status_code == 500:
                 self.assertFail("busted")
         def do_post():

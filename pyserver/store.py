@@ -72,7 +72,7 @@ class JSONStore(object):
             data = json.dumps(data)
         return data
 
-    def get_conn(self, flags=None, vfs=os.environ.get("SQLITE_VFS", "unix-dotfile")):
+    def get_conn(self, vfs=os.environ.get("SQLITE_VFS", "unix-dotfile")):
         conn = apsw.Connection(self.path, statementcachesize=0, vfs=vfs)
         # yes we're using timeout with busy backoff
         conn.setbusytimeout(1000)

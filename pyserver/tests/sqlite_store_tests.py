@@ -65,7 +65,7 @@ class StoreFixture(unittest.TestCase):
         store.insert(mname="ian", mvalue=35)
         store.insert(mname="ian", mvalue=36)
         store.insert(mname="ian", mvalue=37)
-        loaded = store.get_where(mvalue=36)
+        loaded = store.get_where(mvalue=36)[0]
         self.assertEquals("ian", loaded['mname'])
         self.assertEquals(36, loaded['mvalue'])
         

@@ -165,10 +165,7 @@ END
             d = []
             for row in  cursor.execute(self._get_where % kwargs.keys()[0], kwargs.values()):
                 d.append({ zt[0][0]:zt[1] for zt in zip(cursor.getdescription(), row) })
-            if len(d) ==1:
-                return d[0]
-            else:
-                return d
+            return d
 
     @busy_backoff
     def delete(self, id):

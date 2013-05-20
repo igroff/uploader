@@ -70,6 +70,7 @@ END
     _delete = 'DELETE FROM store WHERE rowid = ?'
     _delete_where = 'DELETE FROM store WHERE %s = ?'
     _all = 'SELECT rowid as id, * FROM store ORDER BY rowid'
+    _get_page = 'SELECT rowid as id, * FROM store ORDER BY rowid LIMIT %d OFFSET %d'
 
     def __init__(self, db_path, archetype=None):
         if not archetype:
@@ -143,6 +144,17 @@ END
             cursor = conn.cursor()
             for row in  cursor.execute(self._get, [id]):
                 return { zt[0][0]:zt[1] for zt in zip(cursor.getdescription(), row) }
+
+    @error_backoff
+    def get_page(self, page=0, size=10):
+        limit = size
+        offset = page * size
+        with self.get_conn(vfs="unix-none") as conn:
+            cursor = conn.cursor()
+            d = []
+            for row in  cursor.execute(self._get_page % (limit, offset)):
+                d.append({ zt[0][0]:zt[1] for zt in zip(cursor.getdescription(), row) })
+            return d
     
     @error_backoff
     def get_where(self, **kwargs):

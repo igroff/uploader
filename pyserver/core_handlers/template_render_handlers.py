@@ -8,7 +8,7 @@ from pyserver.core import remove_single_element_lists
 HTML_CONTENT_TYPE_HEADER = {"Content-Type": "text/html"}
 JSON_CONTENT_TYPE_HEADER = {"Content-Type": "application/json"}
 
-@app.route("/template/<path:template_path>")
+@app.route("/raw_template/<path:template_path>")
 def pyserver_core_template_render_handlers_return_template_at(template_path):
     """ Returns the unrendered contents of a template """
     return send_file(

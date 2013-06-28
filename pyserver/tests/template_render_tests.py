@@ -34,7 +34,7 @@ class TemplateRenderTestFixture(unittest.TestCase):
         app.config['_CACHE'] = self.app_cache
 
     def test_return_unrendered_template(self):
-        r = self.app.get("/template/hello.html")
+        r = self.app.get("/raw_template/hello.html")
         self.assertEquals(200, r.status_code)
         self.assertEquals(TEST_HELLO, r.data)
 

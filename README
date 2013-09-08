@@ -1,3 +1,373 @@
 Example of using curl to post a file
 
 curl -F file=@test.txt http://<fqdn>/minecraft
+
+Welcome to hipflask's documentation!
+************************************
+
+Hipflask is a set of functionality built around the Python Flask
+(WSGI) Microframework.  The idea is that it provides all sorts of
+common functionality so that someone developing on top of this can
+focus on just the programming necessary to solve the problem at hand,
+instead of time trying to get servers to start, stop, etc.
+
+
+Definitions
+***********
+
+* Local Event - Events that are emitted into the log file structure of
+  the running application, further detail is in the 'Events' section.
+
+* Configuration - Configuration of the system is accomplished by
+  setting environment variables and is outlined in the 'Configuration'
+  section.
+
+* Handler - Corresponds to a 'view function' in flask.  Within
+  hipflask specifically a handler is a function mapped to a particular
+  route.  As a (theoretical) convenience, hipflask provides a
+  directory in which it will look for handlers that you may provide.
+  Hipflask looks for handler files in the handlers/ directory and will
+  load anything but __init__.py matching *.py.  In practice multiple
+  handlers will occur in a single file, and they will look something
+  like this:
+
+   @app.route("/respond_to")
+   def say_hi():
+     return "hi"
+
+* Another thing - something
+
+
+Controlling Hipflask
+********************
+
+The primary interface for interaction with Hipflask is make.  As such
+all of the following are invoked as 'make <cmd>' where <cmd> is one of
+the below:
+
+* debug - Starts the application using the standard Flask debug
+  server.
+
+* build - Builds Hipflask as needed, primarily this is the setup of a
+  virtual environment and the installation of the proper python
+  packages.
+
+* start - Starts the application in 'production' mode.  This simply
+  starts the app using gunicorn.
+
+* test  - Runs the unit tests (see testing for more information).
+
+* clean - Cleans up var/ and tmp/ directories as well as deleting the
+  virtual environment.  You'll want to ( make clean ; make test ) to
+  make sure everything has the highest likelihood of working.
+
+* docs  - Uses sphinx to build the documentation for hipflask.  See
+  'Documenting Hipflask'
+
+In the non development case of using hipflask it may be the case that
+mutliple instances of Hipflask are needed to run concurrently, to
+assist in this and avoid redundant environment setup a script 'start'
+is provided.  The sole purpose is to synchronize the build stage so
+multiple instances don't try to setup the (virtual) environment
+simultaneously.
+
+
+Documenting Hipflask
+********************
+
+
+Testing
+*******
+
+Talk about unit tests
+
+
+Extending Hipflask
+******************
+
+Talk about package installation and the freeze file
+
+
+Adding Handlers
+===============
+
+The common way to extend the functionality of Hipflask is adding
+handlere.  Hipflask provides a set of (seemingly) useful out-of-the-
+box handlers.
+
+Hipflask creates an application instance which it will manage, this
+application is shared with all the handlers including the out-of-the-
+box handlers.  Creating handlers involves defining handlers and
+attaching them to the Hipflask application, this is done like:
+
+   from pyserver.core import app
+
+   @app.route("/hello", methods=["GET"])
+   def howdy():
+     return "World!"
+
+from pyserver.core import app - this provides access to the Hipflask
+application object to which all handlers will be attached.  The rest
+of the example is simply the definition of the handler.
+
+
+Configuration
+*************
+
+Configuration of the system is managed by setting environment
+variables. The following list specifies the behavior of the common
+settings.
+
+SQLITE_VFS = Used to set the VFS used during SQLite connections.  Can
+be any of the valid VFS choices unix-dotfile (default for
+portability), unix-excl, unix-none, unix-namedsem or the SQLite
+default 'unix'
+
+PORT = Sets the port on which the WSGI server will listen, affects
+both standard and debug environments. (make start, make debug)
+
+LOG_LEVEL = Valid values are those from the python logging module
+(DEBUG, INFO, WARNING, etc.), note that these map to the constants in
+the logging module so case matters.
+
+LOCAL_EVENT_SOURCES = A comma delimited list of sources for which
+Local Events will be emitted, see Events section for more info.
+
+
+Events
+******
+
+The system support the raising of events providing data about various
+actions that have taken place.  Currently the only events emitted are
+'Local Events'.  Local Events are events that are emitted into the
+output stream of the running application.  In a normal production
+environment these events will end up in a log file and are available
+for consumption from there.
+
+
+Handler Decorators
+******************
+
+It's possible to change the way output from a handler is interpereted.
+This is managed by applying decorators to a handler.  Available
+decorators are:
+
+@cache_my_response
+   Is used to ensure that responses from the decorated function will
+   be cached by the application.  The default application cache is
+   filesystem backed.  The location of the cached data stored is
+   controled by the environment variable CACHE_ROOT.  In the case of
+   multiple servers wanting to share cached data, they can be
+   configured to share the filesystem location referenced by
+   CACHE_ROOT.
+
+   When serving a cached response an Expires header will be added to
+   the response indicating the expiration time of the cached item.
+
+   <vary_by=None> - an optional list of request parameters the values
+   of which  will control the variance in the cache.  This is to say
+   the values of these parameters will be used to define the cache key
+   used to cache the response.
+
+   <expiration_seconds=900> - The number of seconds for which the
+   cached response will be considered valid.  This doesn't affect any
+   cache headers in the response this is purely for controling the
+   lifetime of the cached value within the application.
+
+@make_my_response_json
+   Causes the response from the view to be formatted as json.  The
+   Content-Type in the response will be set to application/json, and
+   support for a callback parameter in the request will be made
+   available (JSONP).
+
+   In the case that the inbound request has a callback parameter, any
+   status code of 404 will be converted to a 200.  This is to ease
+   handling of not found conditions by the browser, which in the case
+   of encountering a 404 in a 'JSONP request' can lead to undesireable
+   behavior.  The rest of the response will be unchanged.
+
+
+Endpoints
+*********
+
+GET /diagnostic/echo
+
+   Helper endpoint for developing diagnostic checks.  Simply echoes
+   back  any values provided in the inbound request.
+
+   Parameters:
+      * **'*'** -- any inbound request parameters will be echoed back
+
+   Status Codes:
+      * **200** -- always returns OK
+
+GET /diagnostic/fail
+
+   This endpoint is designed to show how the application fails.  Can
+   be used to assist in creating monitors to check the application
+   health and respond to failures.
+
+   Status Codes:
+      * **500** -- always returns failure
+
+POST /message/local_publish
+
+   Allows for publishing of a local message.
+
+GET /diagnostic
+
+   Used to return the status of the application, including the version
+   of the running application.
+
+   Status Codes:
+      * **200** -- returned as long as all checks return healthy
+
+      * **500** -- returned in the case of any diagnostic tests
+        failing
+
+GET /hello
+
+GET /echo
+
+POST /echo
+
+GET /
+
+   Used to return the status of the application, including the version
+   of the running application.
+
+   Status Codes:
+      * **200** -- returned as long as all checks return healthy
+
+      * **500** -- returned in the case of any diagnostic tests
+        failing
+
+POST /store/(store_name)/(int: id)
+
+   Updates the item identified by <id>, in store named <store_name>.
+   As a convenience, if the item specified by id DOES NOT already
+   exist it will be added.
+
+GET /store/(store_name)/(int: id)
+
+   Returns the data stored in the list 'store_name' with the provided
+   id, or an empty JSON object '{}' if an item with the associated id
+   doesn't exist.
+
+   Example:
+
+   curl http://store.example.com:5000/store/my_test_list/1
+
+   returns: { "id": 1, "number": 1, "name": "pants" }
+
+   curl http://store.example.com:5000/store/my_test_list/1?callback=cb
+
+   returns: cb({ "id": 1, "name": "pants", "number": 1 });
+
+   Status Codes:
+      * **200** -- item exists, and was returned
+
+      * **200** -- item does NOT exist, but request included a
+        'callback' parameter
+
+      * **404** -- no item by the provided id was found, no callback
+        provided
+
+DELETE /store/(store_name)/(int: id)
+
+GET /template/(path: template_path)
+
+   Returns the unrendered contents of a template
+
+GET /render/(path: template_path)
+
+   Given a request that contains data as either a json object, or in
+   the body of the request, render the template requested.
+
+   Currently supports templates with
+
+   Status Codes:
+      * **200** -- successful rendering of the requested template
+
+      * **404** -- requested template doesn't exist
+
+POST /render/(path: template_path)
+
+   Given a request that contains data as either a json object, or in
+   the body of the request, render the template requested.
+
+   Currently supports templates with
+
+   Status Codes:
+      * **200** -- successful rendering of the requested template
+
+      * **404** -- requested template doesn't exist
+
+POST /store/(store_name)
+
+   Save the data provided within the named store. Each POST to this
+   endpoint  referring to the same 'store_name' will append data a
+   list referred to by  'store_name'.
+
+   Data can be provided in one of two ways:
+
+   JSON - if the mimetype of the request isapplication/json and the
+   body contains valid json, the json object will be appended.
+
+   Request Data - any data provided in the querystring or the body of
+   the requrest as form data will be stored.  Any numeric data will be
+   stored in such a way as to maintain its type.
+
+   curl http://store.example.com:5000/store/my_test_list --data
+   "number=1" --data "name=pants"
+
+   will return data such as
+
+   { "id": 1, "number": 1, "name": "pants" }
+
+   Status Codes:
+      * **200** -- successsfully stored the data provided
+
+      * **5xx** -- an error occurred while trying to store the
+        provided data
+
+GET /store/(store_name)
+
+   curl http://store.example.com:5000/store/my_test_list [
+
+      {
+         "id": 1,  "number": 1,  "name": "pants"
+
+      }
+
+   ]
+
+POST /kv/(key)
+
+   Store all of the data provided in the body of the request,
+   associated with the specified key.  The data stored includes the
+   content type information of the request so on fetch the content
+   type will be set as it was when the data was stored.
+
+   Status Codes:
+      * **200** -- provided data has been successfully stored by the
+        given key
+
+GET /kv/(key)
+
+   For a given key return the data stored, if any.
+
+   Status Codes:
+      * **200** -- data found, and returned
+
+      * **404** -- no stored data found for provided key
+
+DELETE /kv/(key)
+
+   Removes all stored data for a given key.
+
+POST /fs/(path: path_to_file)
+
+GET /fs/(path: path_to_file)
+
+DELETE /fs/(path: path_to_file)

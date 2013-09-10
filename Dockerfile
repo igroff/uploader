@@ -1,7 +1,7 @@
 FROM uploader_base:latest
 RUN useradd uploader -m -d /home/uploader -s /bin/bash
 RUN passwd -d uploader
-RUN su uploader -c "curl -kL http://xrl.us/pythonbrewinstall | bash"
+RUN su uploader -c "curl -kL http://xrl.us/pythonbrewinstall | /bin/bash -ic"
 RUN su uploader -c "source ~/.pythonbrew/etc/bashrc && pythonbrew install 2.7.2 && pythonbrew switch 2.7.2"
 ADD . /home/uploader
 WORKDIR /home/uploader

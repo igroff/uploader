@@ -6,6 +6,6 @@ RUN su uploader -c "source ~/.pythonbrew/etc/bashrc && pythonbrew install 2.7.2 
 ADD . /home/uploader
 WORKDIR /home/uploader
 RUN chown -R uploader:uploader /home/uploader
-RUN su uploader -c "make build"
+RUN su uploader -c "/bin/bash -ic 'make build'"
 EXPOSE 8080
-ENTRYPOINT su uploader -c "make -e PORT=8080 start"
+ENTRYPOINT su uploader -c "/bin/bash -ic 'make -e PORT=8080 start'"

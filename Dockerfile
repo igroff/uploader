@@ -8,4 +8,4 @@ WORKDIR /home/uploader
 RUN chown -R uploader:uploader /home/uploader
 RUN su uploader -c "/bin/bash -ic 'make build'"
 EXPOSE 8080
-ENTRYPOINT su uploader -c "/bin/bash -ic 'make -e PORT=8080 start'"
+ENTRYPOINT su uploader -c "/bin/bash -ic 'make -e BIND_INTERFACE=0.0.0.0 -e PORT=8080 start'"

@@ -35,16 +35,22 @@ ${PYENV_DIR}: ${FROZEN_HASH_FILE}
 var/logs: 
 	mkdir -p var/logs
 
+var/run:
+	mkdir -p var/run
+
 .doc_build:
 	mkdir -p .doc_build/text
 	mkdir -p .doc_build/doctrees
 
-setup: var/logs
+setup: var/logs var/run
 
 build: var/logs ${PYENV_DIR}
 	
 start: setup ${PYENV_DIR}
 	@exec $(call with_venv, exec pyserver/bin/server start)
+
+background: setup ${PYENV_DIR}
+	@exec $(call with_venv, exec pyserver/bin/server background)
 
 test: ${PYENV_DIR}
 	@-rm -rf ./output

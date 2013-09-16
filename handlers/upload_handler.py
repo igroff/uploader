@@ -6,10 +6,10 @@ from flask import render_template
 from flask import Response
 from werkzeug import secure_filename
 from argparse import ArgumentParser
+from pyserver.core import app
 
 UPLOAD_FOLDER = './files/'
 
-app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # a list of partitions that we're reserving for our own use
 # not using dl
@@ -67,60 +67,3 @@ def list_contents(root_partition):
     file_names = os.listdir(pp)
     return render_template("ls.html", partition=root_partition, files=file_names)
 
-if __name__ == "__main__":
-    arg_parser = ArgumentParser(description="personal log server")
-    arg_parser.add_argument("action", choices=('start', 'test'),
-        help="action to be performed")
-    args = arg_parser.parse_args()
-
-    if not os.path.exists(UPLOAD_FOLDER):
-        os.makedirs(UPLOAD_FOLDER)
-
-    if args.action == "start":
-        app.run(debug=True)
-    elif args.action == "test":
-        import sys
-        import unittest
-        import uuid
-        from StringIO import StringIO
-        uid = lambda: str(uuid.uuid4())
-        # unit test uses args too.... so remove ours
-        sys.argv.pop()
-        class TestFixture(unittest.TestCase):
-            def setUp(self):
-                app.config['TESTING'] = True
-                self.app = app.test_client()
-
-            def test_app_exists(self):
-                self.assertTrue(self.app)
-        
-            def test_file_upload(self):
-                pid = uid()
-                fn = 'file_%s.txt' % (uid())
-                r = self.app.post('/%s' % (pid),
-                    data={'file': (StringIO('my file contents'), fn)})
-                self.assertEquals(200, r.status_code)
-                self.assertTrue(fn in r.data)
-                # does it come back when requested
-                r = self.app.get('/%s/%s' % (pid, fn))
-                self.assertTrue('my file contents' in r.data)
-                
-            def test_duplicate_file_upload(self):
-                pid = uid()
-                fn = 'file_%s.txt' % (uid())
-                r = self.app.post('/%s' % (pid),
-                    data={'file': (StringIO('my file contents'), fn)})
-                self.assertEquals(200, r.status_code)
-                r = self.app.post('/%s' % (pid),
-                    data={'file': (StringIO('my file contents'), fn)})
-                self.assertEquals(409, r.status_code)
-        
-            def test_non_existant_partition(self):
-                """ this should always return a 200 even if there's nothing there """
-                pid = uid()
-                r = self.app.get("/list/%s" % (pid)) 
-                self.assertEquals(200, r.status_code)
-                self.assertTrue(pid in r.data)
-        
-        unittest.main()
-        print("running tests")

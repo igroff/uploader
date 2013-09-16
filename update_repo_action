@@ -1,6 +1,6 @@
 #! /usr/bin/env bash
 # vim: set ft=shell
-
+ 
 if [ -f var/run/server.pid ]; then
   echo "killing old process `cat var/run/server.pid`"
   cat var/run/server.pid | xargs kill

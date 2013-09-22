@@ -1,9 +1,10 @@
 SHELL=/bin/bash
-PYENV=.$(notdir $(CURDIR))
+FROZEN_HASH=$(shell openssl md5 pyserver/etc/frozen | sed -e 's[MD5(pyserver/etc/frozen)= [[g')
+FROZEN_HASH_FILE=.frozen-hash-${FROZEN_HASH}
+PYENV=.${FROZEN_HASH}
 PYENV_DIR=~/.pythonbrew/venvs/Python-2.7.2/${PYENV}
 with_brew=bash -i -c 'source ~/.pythonbrew/etc/bashrc && $(1)'
 with_venv=bash -i -c 'source ~/.pythonbrew/etc/bashrc && pythonbrew venv use $(PYENV) && $(1)'
-FROZEN_HASH_FILE=.frozen-hash-$(shell openssl md5 pyserver/etc/frozen | sed -e 's[MD5(pyserver/etc/frozen)= [[g')
 
 .PHONY: clean start test debug setup freeze docs show_config git_hooks crontab build
 

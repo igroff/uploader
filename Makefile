@@ -17,7 +17,7 @@ ${FROZEN_HASH_FILE}:
 	-@rm .frozen-hash*
 	echo "environment was built for this version of the frozen file" > ${FROZEN_HASH_FILE}
 
-${PYENV_DIR}: ${FROZEN_HASH_FILE}
+${PYENV_DIR}:
 	$(call with_brew, pythonbrew venv create ${PYENV})
 	$(call with_venv, pip install --no-index --find-links=file://`pwd`/pyserver/packages/ -r pyserver/etc/frozen)
 	-mkdir tmp

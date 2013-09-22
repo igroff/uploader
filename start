@@ -1,7 +1,0 @@
-#! /usr/bin/env bash
-
-lockfile -1 -r -1 build.lock
-make build
-rm -rf build.lock
-
-exec make start

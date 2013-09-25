@@ -1,3 +1,3 @@
 #! /usr/bin/env bash
 export UPLOAD_FOLDER=`cd ~/files; pwd;`
-exec make start
+exec make -e PORT=${1} start

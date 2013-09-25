@@ -1,4 +1,4 @@
-Example of using curl to post a file
+ Example of using curl to post a file
 
 curl -F file=@test.txt http://<fqdn>/minecraft
 

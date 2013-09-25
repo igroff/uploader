@@ -8,9 +8,7 @@ from werkzeug import secure_filename
 from argparse import ArgumentParser
 from pyserver.core import app
 
-UPLOAD_FOLDER = './files/'
-
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_FOLDER'] = os.environ.get('UPLOAD_FOLDER', './files/')
 # a list of partitions that we're reserving for our own use
 # not using dl
 app.config['RESERVED_PARTITIONS'] = ['list', 'dl']
